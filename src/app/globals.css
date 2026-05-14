@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  /* Branding Colors */
+  --color-primary: #4B0082;   /* Deep Plum */
+  --color-accent: #FFBF00;    /* Amber */
+  --color-background: #FFFDD0; /* Soft Cream */
+
+  /* Typography */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Noto Sans", sans-serif;
+}
+
+/* Global reset for the Handcrafted look */
+body {
+  background-color: var(--color-background);
+  color: #171717; /* Dark text for contrast */
+}
