@@ -12,6 +12,7 @@ Handcrafted Haven is a virtual marketplace designed to connect talented artisans
 - Lehi Nyakno Daniel
 - Christiana Nwachukwu
 - Kamohelo Godfrey Mejaele
+- Oribi Teo-Iyalla
 
 ## Project Goals
 
