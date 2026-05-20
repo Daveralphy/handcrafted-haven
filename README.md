@@ -1,8 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Handcrafted Haven
 
-## Getting Started
+Handcrafted Haven is a virtual marketplace designed to connect talented artisans with customers who appreciate unique, high-quality handmade products. This application fosters a sense of community while promoting sustainable consumption and supporting local creators.
 
-First, run the development server:
+## Group Members (Team 01)
 
 - Raphael Eferire Daveal (Week 02 Group Lead)
 - Enrique Alberto Ibarra Cuanalo
@@ -12,20 +12,20 @@ First, run the development server:
 - Lehi Nyakno Daniel
 - Christiana Nwachukwu
 - Kamohelo Godfrey Mejaele
-- Oribi Teo-Iyalla
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Goals
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Seller Profiles**: Enable artisans to showcase craftsmanship and share their stories.
+- **Product Listings**: Allow for curated item displays with descriptions, pricing, and images.
+- **Search & Filter**: Provide users with an intuitive way to browse the catalog by category or price.
+- **Reviews & Ratings**: Implement a feedback system for community engagement.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technology Stack
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Front-End**: Next.js (React), Tailwind CSS
+- **Back-End**: Node.js, Database
+- **Project Management**: GitHub Boards
+- **Deployment**: Vercel
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
@@ -45,3 +45,9 @@ Should have grids or columns collapse into single column views.
 Should have mobile friendly versions of images with wide aspect ratios.
 
 ![Design Example](docs/images/design-example.jpg)
+
+## Getting Started
+
+1. Clone the repository: `git clone https://github.com/Daveralphy/handcrafted-haven.git`
+2. Install dependencies: `npm install`
+3. Run the development server: `npm run dev`
