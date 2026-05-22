@@ -2,24 +2,59 @@ export default function Home() {
   return (
     <div style={{ backgroundColor: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-        {/* Hero Section */}
-        <section style={{ 
-          marginBottom: '3rem', 
-          padding: '2rem', 
-          background: '#ffffff', 
-          border: '1px solid #e2e8f0', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
-        }}>
-          <h1 style={{ fontSize: '2.5rem', color: '#0f172a', marginBottom: '0.5rem' }}>Welcome to Handcrafted Haven</h1>
-          <p style={{ color: '#64748b', fontSize: '1.125rem' }}>Discover authentic, artisan-made crafts from talented creators worldwide.</p>
-        </section>
 
+        {/* Hero Section */}
+        
+
+{/* Hero Section - Christiana */}
+<section style={{
+  marginBottom: '3rem',
+  padding: '4rem 2rem',
+  background: '#4B0082',
+  borderRadius: '12px',
+  textAlign: 'center',
+}}>
+  <h1 style={{
+    fontSize: '3rem',
+    color: '#FFFDD0',
+    marginBottom: '1rem',
+    fontFamily: 'Playfair Display, serif',
+    lineHeight: '1.2'
+  }}>
+    Discover Unique Handcrafted Treasures
+  </h1>
+
+  <p style={{
+    color: '#e2d9f3',
+    fontSize: '1.25rem',
+    marginBottom: '2rem',
+    maxWidth: '600px',
+    margin: '0 auto 2rem auto',
+    lineHeight: '1.6'
+  }}>
+    Connect with talented artisans and find one-of-a-kind
+    handmade products made with love and dedication.
+  </p>
+
+  <a href="/products" style={{
+    backgroundColor: '#FFBF00',
+    color: '#0f172a',
+    padding: '1rem 2.5rem',
+    borderRadius: '8px',
+    fontWeight: 'bold',
+    fontSize: '1.125rem',
+    textDecoration: 'none',
+    display: 'inline-block',
+    marginTop: '1rem'
+  }}>
+    Shop Now
+  </a>
+</section>
         {/* Featured Categories Section */}
         <section style={{ 
           marginBottom: '3rem', 
           padding: '2rem', 
-          background: '#ffffff', 
+          background: '#ffffff',
           border: '1px solid #e2e8f0', 
           borderRadius: '12px',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
