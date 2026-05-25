@@ -1,100 +1,108 @@
 export default function Home() {
+  const categories = ['Ceramics', 'Leather Goods', 'Metalwork', 'Textiles'];
+  const products = [
+    { id: 1, name: 'Hand-Thrown Ceramic Vase', price: '$85' },
+    { id: 2, name: 'Embroidered Leather Bag', price: '$120' },
+    { id: 3, name: 'Copper Metalwork Sculpture', price: '$150' },
+    { id: 4, name: 'Hand-Woven Textile Wall Hanging', price: '$95' },
+    { id: 5, name: 'Ceramic Dinnerware Set', price: '$180' },
+    { id: 6, name: 'Artisan Leather Journal', price: '$45' },
+  ];
+
   return (
-    <div style={{ backgroundColor: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-        {/* Hero Section */}
-        <section style={{ 
-          marginBottom: '3rem', 
-          padding: '2rem', 
-          background: '#ffffff', 
-          border: '1px solid #e2e8f0', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
-        }}>
-          <h1 style={{ fontSize: '2.5rem', color: '#0f172a', marginBottom: '0.5rem' }}>Welcome to Handcrafted Haven</h1>
-          <p style={{ color: '#64748b', fontSize: '1.125rem' }}>Discover authentic, artisan-made crafts from talented creators worldwide.</p>
-        </section>
-
-        {/* Featured Categories Section */}
-        <section style={{ 
-          marginBottom: '3rem', 
-          padding: '2rem', 
-          background: '#ffffff', 
-          border: '1px solid #e2e8f0', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
-        }}>
-          <h2 style={{ fontSize: '1.75rem', color: '#0f172a', marginBottom: '1.5rem' }}>Featured Categories</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-            {['Woodwork', 'Jewelry', 'Pottery', 'Textiles'].map((category) => (
-              <div key={category} style={{
-                padding: '1.5rem',
-                backgroundColor: '#f1f5f9',
-                borderRadius: '8px',
-                textAlign: 'center',
-                color: '#0f172a',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
-              }}>
-                {category}
-              </div>
-            ))}
+    <>
+      {/* Header */}
+      <header>
+        <div className="logo">Artisan Collective</div>
+        <nav>
+          <a href="#shop">Shop</a>
+          <a href="#about">About</a>
+          <a href="#artisans">Artisans</a>
+          <a href="#contact">Contact</a>
+          <div className="nav-icons">
+            <button aria-label="Search" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem' }}>🔍</button>
+            <button aria-label="Cart" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem' }}>🛒</button>
           </div>
-        </section>
+        </nav>
+      </header>
 
-        {/* Artisan Spotlight Section */}
-        <section style={{ 
-          marginTop: '3rem', 
-          padding: '2rem', 
-          background: '#ffffff', 
-          border: '1px solid #e2e8f0', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
-        }}>
-          <h2 style={{ fontSize: '1.75rem', color: '#0f172a', marginBottom: '0.5rem' }}>Artisan Spotlight</h2>
-          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Meet the creators behind the custom craftsmanship.</p>
-          
-          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Placeholder Slot for Artisan Image */}
-            <div style={{ 
-              width: '120px', 
-              height: '120px', 
-              backgroundColor: '#cbd5e1', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: '#475569',
-              fontWeight: 'bold',
-              flexShrink: 0
-            }}>
-              Photo
+      {/* Hero Section */}
+      <section className="hero">
+        <h1>Discover Handcrafted Excellence</h1>
+        <p>
+          Each piece tells a story of dedication, skill, and timeless artistry.
+          Support independent artisans and bring unique treasures into your
+          home.
+        </p>
+        <button className="btn-primary">Explore Collection</button>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="featured-section" id="shop">
+        <div className="featured-container">
+          {/* Sidebar Filter */}
+          <aside className="featured-sidebar">
+            <h3 className="filter-title">Filter by Category</h3>
+            <div className="filter-group">
+              {categories.map((category) => (
+                <label key={category}>
+                  <input type="checkbox" />
+                  <span>{category}</span>
+                </label>
+              ))}
             </div>
-            
-            {/* Artisan Bio Text Details */}
-            <div style={{ flex: '1', minWidth: '250px' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', color: '#0f172a' }}>Oribi Teo-Iyalla</h3>
-              <p style={{ margin: '0', color: '#334155', lineHeight: '1.6' }}>
-                Specializing in handcrafted sustainable woodwork and custom jewelry design. Every piece in this collection tells a story of dedicated patience, sourcing raw local elements, and preserving functional master craftsmanship for everyday environments.
+          </aside>
+
+          {/* Products Grid */}
+          <div className="featured-content">
+            <div className="featured-header">
+              <h2>Featured Products</h2>
+              <span className="item-count">{products.length} items</span>
+            </div>
+            <div className="products-grid">
+              {products.map((product) => (
+                <div key={product.id} className="product-item">
+                  <div className="product-image">Image</div>
+                  <div className="product-info">
+                    <div className="product-name">{product.name}</div>
+                    <div className="product-price">{product.price}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Artisan Spotlight Section */}
+      <section className="artisan-section" id="artisans">
+        <div className="artisan-container">
+          <div className="artisan-header">
+            <h2>Artisan Spotlight</h2>
+            <p>Meet the creators behind the custom craftsmanship.</p>
+          </div>
+          <div className="artisan-content">
+            <div className="artisan-image">Photo</div>
+            <div className="artisan-bio">
+              <h3>Oribi Teo-Iyalla</h3>
+              <p>
+                Specializing in handcrafted sustainable woodwork and custom
+                jewelry design. Every piece in this collection tells a story of
+                dedicated patience, sourcing raw local elements, and preserving
+                functional master craftsmanship for everyday environments.
               </p>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer style={{ 
-        marginTop: '5rem', 
-        paddingTop: '1.5rem', 
-        borderTop: '1px solid #e2e8f0', 
-        textAlign: 'center', 
-        color: '#94a3b8',
-        fontSize: '0.875rem',
-        padding: '1.5rem 2rem'
-      }}>
-        <p>&copy; {new Date().getFullYear()} Handcrafted Haven Marketplace. All rights reserved.</p>
+      <footer>
+        <p>
+          &copy; {new Date().getFullYear()} Artisan Collective Marketplace. All
+          rights reserved.
+        </p>
       </footer>
-    </div>
+    </>
   );
 }
