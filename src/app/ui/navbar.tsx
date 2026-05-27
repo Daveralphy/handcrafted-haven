@@ -1,5 +1,7 @@
 "use client";
 
+/* Designed by Luke */
+
 import Link from "next/link";
 import { useState } from "react";
 import type { NavItem } from "../site-config";
@@ -17,7 +19,6 @@ type NavbarProps = {
   searchAction: NavAction;
 };
 
-// I don't think these will be necessary, but I implemented them anyways, we can remove later.
 function SearchIcon() {
   return (
     <svg
@@ -36,6 +37,7 @@ function SearchIcon() {
     </svg>
   );
 }
+
 function CartIcon() {
   return (
     <svg
@@ -54,35 +56,6 @@ function CartIcon() {
     </svg>
   );
 }
-// --------------------------------------------------------------------------------------------
-
-
-function MenuIcon({ isOpen }: { isOpen: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-6 w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      {isOpen ? (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 18 18 6M6 6l12 12"
-        />
-      ) : (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4 7h16M4 12h16M4 17h16"
-        />
-      )}
-    </svg>
-  );
-}
 
 export default function Navbar({
   brandTitle,
@@ -91,77 +64,72 @@ export default function Navbar({
   navItems = [],
   searchAction,
 }: NavbarProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
-    <header className="site-navbar">
-      <nav aria-label="Main navigation">
-        <Link href="/">{brandTitle}</Link>
+    <header style={{ backgroundColor: '#4B0082', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
+      <nav aria-label="Main navigation" style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '1.25rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxSizing: 'border-box'
+      }}>
+        
+        {/* Brand Logo Title Left */}
+        <Link href="/" style={{
+          fontFamily: 'Playfair Display, serif',
+          fontSize: '1.75rem',
+          fontWeight: 'bold',
+          color: '#FFFDD0',
+          textDecoration: 'none',
+          letterSpacing: '0.5px'
+        }}>
+          {brandTitle}
+        </Link>
 
-        <div>
+        {/* Navigation Items Right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link key={item.href} href={item.href} style={{
+              color: '#e2d9f3',
+              textDecoration: 'none',
+              fontWeight: '600',
+              fontSize: '1rem'
+            }}>
               {item.label}
             </Link>
           ))}
-          <Link href={searchAction.href} aria-label={searchAction.label}>
+          
+          <Link href={searchAction.href} aria-label={searchAction.label} style={{ color: '#FFFDD0', display: 'flex', alignItems: 'center' }}>
             <SearchIcon />
           </Link>
+          
           <Link
             href={cartAction.href}
             aria-label={`${cartAction.label} with ${cartItemCount} items`}
+            style={{ color: '#FFFDD0', display: 'flex', alignItems: 'center', position: 'relative' }}
           >
             <CartIcon />
             {cartItemCount > 0 ? (
-              <span>{cartItemCount}</span>
+              <span style={{
+                position: 'absolute',
+                top: '-6px',
+                right: '-8px',
+                backgroundColor: '#FFBF00',
+                color: '#4B0082',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                lineHeight: 1
+              }}>
+                {cartItemCount}
+              </span>
             ) : null}
           </Link>
         </div>
-
-        <button
-          type="button"
-          aria-label="Toggle navigation menu"
-          aria-expanded={isMenuOpen}
-          onClick={() => setIsMenuOpen((open) => !open)}
-        >
-          <MenuIcon isOpen={isMenuOpen} />
-        </button>
       </nav>
-
-      {isMenuOpen ? (
-        <div>
-          <div className="site-navbar-menu">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <div>
-              <Link
-                href={searchAction.href}
-                aria-label={searchAction.label}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <SearchIcon />
-              </Link>
-              <Link
-                href={cartAction.href}
-                aria-label={`${cartAction.label} with ${cartItemCount} items`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <CartIcon />
-                {cartItemCount > 0 ? (
-                  <span>{cartItemCount}</span>
-                ) : null}
-              </Link>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
