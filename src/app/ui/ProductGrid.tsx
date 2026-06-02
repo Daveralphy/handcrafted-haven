@@ -1,20 +1,50 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import CategorySidebar from './CategorySidebar';
 
 /* Designed by Oribi */
 
+// Mock Data replace and retrieve from the database in the future.
+const products = [
+  { id: 1, title: 'Hand-Carved Walnut Bowl', price: 85, category: 'Woodwork', availability: 'In Stock' },
+  { id: 2, title: 'Minimalist Silver Ring', price: 120, category: 'Jewelry', availability: 'In Stock' },
+  { id: 3, title: 'Earthenware Ceramic Vase', price: 65, category: 'Pottery', availability: 'Custom Order Only' },
+  { id: 4, title: 'Woven Cotton Throw Blanket', price: 110, category: 'Textiles', availability: 'In Stock' },
+  { id: 5, title: 'Mahogany Cutting Board', price: 45, category: 'Woodwork', availability: 'Custom Order Only' },
+  { id: 6, title: 'Beaded Drop Earrings', price: 75, category: 'Jewelry', availability: 'In Stock' },
+];
+const categories = Array.from(new Set(products.map((product) => product.category)));
+const availabilityOptions = Array.from(new Set(products.map((product) => product.availability)));
+const priceLimit = 200;
+
 export default function ProductGrid() {
-  const products = [
-    { id: 1, title: 'Hand-Carved Walnut Bowl', price: '$85.00', category: 'Woodwork' },
-    { id: 2, title: 'Minimalist Silver Ring', price: '$120.00', category: 'Jewelry' },
-    { id: 3, title: 'Earthenware Ceramic Vase', price: '$65.00', category: 'Pottery' },
-    { id: 4, title: 'Woven Cotton Throw Blanket', price: '$110.00', category: 'Textiles' },
-    { id: 5, title: 'Mahogany Cutting Board', price: '$45.00', category: 'Woodwork' },
-    { id: 6, title: 'Beaded Drop Earrings', price: '$75.00', category: 'Jewelry' },
-  ];
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(categories);
+  const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
+  const [maxPrice, setMaxPrice] = useState(priceLimit);
+
+  const toggleSelection = (
+    value: string,
+    selectedValues: string[],
+    setSelectedValues: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setSelectedValues(
+      selectedValues.includes(value)
+        ? selectedValues.filter((selectedValue) => selectedValue !== value)
+        : [...selectedValues, value]
+    );
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory = selectedCategories.includes(product.category);
+    const matchesAvailability = selectedAvailability.includes(product.availability);
+    const matchesPrice = maxPrice >= priceLimit || product.price <= maxPrice;
+
+    return matchesCategory && matchesAvailability && matchesPrice;
+  });
 
   return (
-    <section style={{ 
+    <section style={{
       margin: '3rem 0',
       width: '100%',
       display: 'flex',
@@ -23,15 +53,24 @@ export default function ProductGrid() {
       alignItems: 'flex-start',
       flexWrap: 'wrap'
     }}>
-      
+
       {/* Left Column: Slim Interactive Filter Sidebar Component */}
       <div style={{ flex: '0 0 240px', minWidth: '240px' }}>
-        <CategorySidebar />
+        <CategorySidebar
+          categories={categories}
+          availabilityOptions={availabilityOptions}
+          selectedCategories={selectedCategories}
+          selectedAvailability={selectedAvailability}
+          maxPrice={maxPrice}
+          onCategoryChange={(category) => toggleSelection(category, selectedCategories, setSelectedCategories)}
+          onAvailabilityChange={(availability) => toggleSelection(availability, selectedAvailability, setSelectedAvailability)}
+          onMaxPriceChange={setMaxPrice}
+        />
       </div>
 
       {/* Right Column: Section Header + 6 Product Grid Cards */}
       <div style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        
+
         {/* Marketplace Section Header Row */}
         <div style={{
           display: 'flex',
@@ -44,8 +83,8 @@ export default function ProductGrid() {
           <h2 style={{ fontSize: '1.75rem', color: 'var(--color-primary)', margin: 0, fontFamily: 'var(--font-heading)', fontWeight: 'bold' }}>
             Featured Products
           </h2>
-          <span style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: '500' }}>
-            Showing {products.length} products
+          <span style={{ fontSize: '0.95rem', color: '#334155', fontWeight: '500' }}>
+            Showing {filteredProducts.length} products
           </span>
         </div>
 
@@ -56,7 +95,7 @@ export default function ProductGrid() {
           gap: '1.5rem',
           width: '100%'
         }}>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <article key={product.id} style={{
               backgroundColor: '#ffffff',
               border: '1px solid #e2e8f0',
@@ -81,10 +120,10 @@ export default function ProductGrid() {
               }}>
                 [ {product.category} Image View ]
               </div>
-              
+
               {/* Context Detail Block */}
               <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flexGrow: 1 }}>
-                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.75rem', color: '#334155', fontWeight: 'bold', textTransform: 'uppercase' }}>
                   {product.category}
                 </span>
                 <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0, fontWeight: '600', fontFamily: 'var(--font-body)', lineHeight: '1.4' }}>
@@ -92,7 +131,7 @@ export default function ProductGrid() {
                 </h4>
                 <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem' }}>
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                    {product.price}
+                    ${product.price.toFixed(2)}
                   </span>
                   <button type="button" style={{
                     backgroundColor: 'var(--color-accent)',
@@ -111,6 +150,12 @@ export default function ProductGrid() {
             </article>
           ))}
         </div>
+
+        {filteredProducts.length === 0 && (
+          <p style={{ color: '#334155', fontWeight: '500', margin: 0 }}>
+            No products match the selected filters.
+          </p>
+        )}
 
       </div>
 
