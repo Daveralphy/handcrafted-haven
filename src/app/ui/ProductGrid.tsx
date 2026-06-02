@@ -41,7 +41,7 @@ export default function ProductGrid() {
           paddingBottom: '0.75rem',
           width: '100%'
         }}>
-          <h2 style={{ fontSize: '1.75rem', color: '#4B0082', margin: 0, fontFamily: 'Playfair Display, serif', fontWeight: 'bold' }}>
+          <h2 style={{ fontSize: '1.75rem', color: 'var(--color-primary)', margin: 0, fontFamily: 'var(--font-heading)', fontWeight: 'bold' }}>
             Featured Products
           </h2>
           <span style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: '500' }}>
@@ -87,16 +87,16 @@ export default function ProductGrid() {
                 <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>
                   {product.category}
                 </span>
-                <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0, fontWeight: '600', fontFamily: 'system-ui, sans-serif', lineHeight: '1.4' }}>
+                <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0, fontWeight: '600', fontFamily: 'var(--font-body)', lineHeight: '1.4' }}>
                   {product.title}
                 </h4>
                 <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem' }}>
-                  <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: '#4B0082' }}>
+                  <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
                     {product.price}
                   </span>
                   <button type="button" style={{
-                    backgroundColor: '#FFBF00',
-                    color: '#4B0082',
+                    backgroundColor: 'var(--color-accent)',
+                    color: 'var(--color-primary)',
                     border: 'none',
                     padding: '0.5rem 1rem',
                     borderRadius: '6px',
