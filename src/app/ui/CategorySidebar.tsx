@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import RangeSlider from './RangeSlider';
 
 /* Designed by Oribi */
 
@@ -25,24 +26,6 @@ export default function CategorySidebar({
   onAvailabilityChange,
   onMaxPriceChange,
 }: CategorySidebarProps) {
-  const [displayPricePosition, setDisplayPricePosition] = useState(maxPrice);
-  const priceLabel = maxPrice >= 200 ? 'Any' : `$${maxPrice}`;
-  // Prevents price amount label from overflowing.
-  const priceThumbPosition = `${(displayPricePosition / 200) * 100}%`;
-  const priceLabelTransform = displayPricePosition === 0
-    ? 'translateX(0)'
-    : displayPricePosition >= 200
-      ? 'translateX(-100%)'
-      : 'translateX(-50%)';
-
-  useEffect(() => {
-    const debounceTimer = window.setTimeout(() => {
-      setDisplayPricePosition(maxPrice);
-    }, 250);
-
-    return () => window.clearTimeout(debounceTimer);
-  }, [maxPrice]);
-
   return (
     <div style={{
       backgroundColor: '#ffffff',
@@ -67,48 +50,18 @@ export default function CategorySidebar({
         Filter
       </h2>
 
-      {/* Group 1: Filter by Price */}
-      <div>
-        <h3 style={{
-          fontSize: '0.9rem',
-          fontWeight: 'bold',
-          color: 'var(--color-primary)',
-          margin: '0 0 1rem 0',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          fontFamily: 'var(--font-body)'
-        }}>
-          Price Range
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-          <div style={{ position: 'relative', height: '1.5rem' }}>
-            <span style={{
-              color: '#334155',
-              fontSize: '0.95rem',
-              fontWeight: '600',
-              left: priceThumbPosition,
-              position: 'absolute',
-              transform: priceLabelTransform,
-              transition: 'left 0.2s cubic-bezier(0.34, 1.35, 0.64, 1)',
-              whiteSpace: 'nowrap'
-            }}>
-              {priceLabel}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="200"
-            step="5"
-            value={maxPrice}
-            onChange={(event) => onMaxPriceChange(Number(event.target.value))}
-            aria-label="Maximum product price"
-            style={{ accentColor: 'var(--color-primary)', width: '100%', cursor: 'pointer' }}
-          />
-        </div>
-      </div>
+      <RangeSlider
+        label="Price Range"
+        value={maxPrice}
+        min={0}
+        max={200}
+        step={5}
+        ariaLabel="Maximum product price"
+        formatValue={(value) => value >= 200 ? 'Any' : `$${value}`}
+        onChange={onMaxPriceChange}
+      />
 
-      {/* Group 2: Filter by Category */}
+      {/* Group 1: Filter by Category */}
       <div>
         <h3 style={{
           fontSize: '0.9rem',
