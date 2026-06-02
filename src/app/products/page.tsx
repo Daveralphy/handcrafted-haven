@@ -23,7 +23,7 @@ export default function ProductsPage() {
           style={{
             color: "var(--color-primary)",
             fontFamily: "var(--font-heading)",
-            fontSize: "2.5rem",
+            fontSize: "3rem",
             fontWeight: "bold",
             margin: "0 0 2rem",
             textAlign: "center",
