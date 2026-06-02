@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CategorySidebar from './CategorySidebar';
 
 /* Designed by Oribi */
@@ -22,6 +22,7 @@ export default function ProductGrid() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(categories);
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
   const [maxPrice, setMaxPrice] = useState(priceLimit);
+  const [appliedMaxPrice, setAppliedMaxPrice] = useState(priceLimit);
 
   const toggleSelection = (
     value: string,
@@ -38,10 +39,18 @@ export default function ProductGrid() {
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategories.includes(product.category);
     const matchesAvailability = selectedAvailability.includes(product.availability);
-    const matchesPrice = maxPrice >= priceLimit || product.price <= maxPrice;
+    const matchesPrice = appliedMaxPrice >= priceLimit || product.price <= appliedMaxPrice;
 
     return matchesCategory && matchesAvailability && matchesPrice;
   });
+
+  useEffect(() => {
+    const debounceTimer = window.setTimeout(() => {
+      setAppliedMaxPrice(maxPrice);
+    }, 250);
+
+    return () => window.clearTimeout(debounceTimer);
+  }, [maxPrice]);
 
   return (
     <section style={{
