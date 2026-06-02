@@ -7,16 +7,16 @@ export default function Hero() {
     <section style={{
       marginBottom: '3rem',
       padding: '4rem 2rem',
-      background: '#4B0082',
+      background: 'var(--color-primary)',
       borderRadius: '12px',
       textAlign: 'center',
       boxShadow: '0 4px 15px rgba(75, 0, 130, 0.15)'
     }}>
       <h1 style={{
         fontSize: '3rem',
-        color: '#FFFDD0',
+        color: 'var(--color-background)',
         marginBottom: '1rem',
-        fontFamily: 'Playfair Display, serif',
+        fontFamily: 'var(--font-heading)',
         lineHeight: '1.2'
       }}>
         Discover Unique Handcrafted Treasures
@@ -35,8 +35,8 @@ export default function Hero() {
       </p>
 
       <a href="/products" style={{
-        backgroundColor: '#FFBF00',
-        color: '#4B0082',
+        backgroundColor: 'var(--color-accent)',
+        color: 'var(--color-primary)',
         padding: '1rem 2.5rem',
         borderRadius: '8px',
         fontWeight: 'bold',

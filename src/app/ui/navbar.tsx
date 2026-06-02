@@ -1,9 +1,8 @@
 "use client";
 
-/* Designed by Luke */
+/* Designed by Porter Luke Frazier */
 
 import Link from "next/link";
-import { useState } from "react";
 import type { NavItem } from "../site-config";
 
 type NavAction = {
@@ -65,7 +64,7 @@ export default function Navbar({
   searchAction,
 }: NavbarProps) {
   return (
-    <header style={{ backgroundColor: '#4B0082', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
+    <header style={{ backgroundColor: 'var(--color-primary)', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
       <nav aria-label="Main navigation" style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -75,14 +74,12 @@ export default function Navbar({
         justifyContent: 'space-between',
         boxSizing: 'border-box'
       }}>
-        
+
         {/* Brand Logo Title Left */}
-        <Link href="/" style={{
-          fontFamily: 'Playfair Display, serif',
+        <Link href="/" className="text-background no-underline transition-colors hover:text-accent" style={{
+          fontFamily: 'var(--font-heading)',
           fontSize: '1.75rem',
           fontWeight: 'bold',
-          color: '#FFFDD0',
-          textDecoration: 'none',
           letterSpacing: '0.5px'
         }}>
           {brandTitle}
@@ -91,24 +88,23 @@ export default function Navbar({
         {/* Navigation Items Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} style={{
-              color: '#e2d9f3',
-              textDecoration: 'none',
+            <Link key={item.href} href={item.href} className="text-[#e2d9f3] no-underline transition-colors hover:text-accent" style={{
               fontWeight: '600',
               fontSize: '1rem'
             }}>
               {item.label}
             </Link>
           ))}
-          
-          <Link href={searchAction.href} aria-label={searchAction.label} style={{ color: '#FFFDD0', display: 'flex', alignItems: 'center' }}>
+
+          <Link href={searchAction.href} aria-label={searchAction.label} className="text-background transition-colors hover:text-accent" style={{ display: 'flex', alignItems: 'center' }}>
             <SearchIcon />
           </Link>
-          
+
           <Link
             href={cartAction.href}
             aria-label={`${cartAction.label} with ${cartItemCount} items`}
-            style={{ color: '#FFFDD0', display: 'flex', alignItems: 'center', position: 'relative' }}
+            className="text-background transition-colors hover:text-accent"
+            style={{ display: 'flex', alignItems: 'center', position: 'relative' }}
           >
             <CartIcon />
             {cartItemCount > 0 ? (
@@ -116,8 +112,8 @@ export default function Navbar({
                 position: 'absolute',
                 top: '-6px',
                 right: '-8px',
-                backgroundColor: '#FFBF00',
-                color: '#4B0082',
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-primary)',
                 fontSize: '0.75rem',
                 fontWeight: 'bold',
                 borderRadius: '50%',

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -40,91 +42,5 @@ a:hover {
 @layer components {
   a:focus-visible {
     @apply outline outline-2 outline-offset-4 outline-accent;
-  }
-
-  .site-navbar {
-    @apply sticky top-0 z-50 border-b border-white/10 bg-primary text-white shadow-[0_6px_18px_rgba(75,0,130,0.22)];
-  }
-
-  .site-navbar nav {
-    @apply mx-auto flex min-h-20 w-full max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12;
-  }
-
-  .site-navbar nav > a {
-    @apply font-heading text-3xl font-bold leading-none tracking-normal text-white sm:text-4xl;
-  }
-
-  .site-navbar nav > div {
-    @apply hidden items-center gap-7 md:flex;
-  }
-
-  .site-navbar nav > div a {
-    @apply text-base font-semibold text-white/90;
-  }
-
-  .site-navbar nav > div a[aria-label],
-  .site-navbar button {
-    @apply rounded-full p-2 text-white/90;
-  }
-
-  .site-navbar button:hover {
-    color: var(--color-accent);
-  }
-
-  .site-navbar button:focus-visible {
-    @apply outline outline-2 outline-offset-4 outline-accent;
-  }
-
-  .site-navbar nav > div a[aria-label*="cart" i] {
-    @apply relative;
-  }
-
-  .site-navbar nav > div a[aria-label*="cart" i] span,
-  .site-navbar-menu a[aria-label*="cart" i] span {
-    @apply grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-xs font-bold leading-none text-primary;
-  }
-
-  .site-navbar nav > div a[aria-label*="cart" i] span {
-    @apply absolute -right-1 -top-1 shadow-sm;
-  }
-
-  .site-navbar > div {
-    @apply border-t border-white/10 bg-primary px-5 py-4 shadow-lg md:hidden;
-  }
-
-  .site-navbar-menu {
-    @apply mx-auto flex max-w-7xl flex-col gap-2;
-  }
-
-  .site-navbar-menu a {
-    @apply rounded-md px-3 py-3 text-base font-semibold text-white/90;
-  }
-
-  .site-navbar-menu a:hover {
-    background-color: rgb(255 255 255 / 10%);
-  }
-
-  .site-navbar-menu a:focus-visible {
-    @apply outline-offset-2;
-  }
-
-  .site-navbar-menu > div {
-    @apply flex items-center gap-2 border-t border-white/10 pt-3;
-  }
-
-  .site-navbar-menu > div a {
-    @apply flex flex-1 items-center justify-center;
-  }
-
-  .site-navbar-menu a[aria-label*="cart" i] {
-    @apply relative;
-  }
-
-  .site-navbar-menu a[aria-label*="cart" i] span {
-    @apply ml-2;
-  }
-
-  .site-navbar nav > button {
-    @apply md:hidden;
   }
 }

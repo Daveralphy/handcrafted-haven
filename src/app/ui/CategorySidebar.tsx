@@ -24,11 +24,11 @@ export default function CategorySidebar() {
         <h3 style={{
           fontSize: '0.9rem',
           fontWeight: 'bold',
-          color: '#4B0082',
+          color: 'var(--color-primary)',
           margin: '0 0 1rem 0',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
-          fontFamily: 'system-ui, sans-serif'
+          fontFamily: 'var(--font-body)'
         }}>
           Filter by Category
         </h3>
@@ -38,7 +38,7 @@ export default function CategorySidebar() {
               <input 
                 type="checkbox" 
                 defaultChecked={category === 'Woodwork'}
-                style={{ accentColor: '#4B0082', width: '16px', height: '16px', cursor: 'pointer' }} 
+                style={{ accentColor: 'var(--color-primary)', width: '16px', height: '16px', cursor: 'pointer' }} 
               />
               {category}
             </label>
@@ -51,11 +51,11 @@ export default function CategorySidebar() {
         <h3 style={{
           fontSize: '0.9rem',
           fontWeight: 'bold',
-          color: '#4B0082',
+          color: 'var(--color-primary)',
           margin: '0 0 1rem 0',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
-          fontFamily: 'system-ui, sans-serif'
+          fontFamily: 'var(--font-body)'
         }}>
           Availability
         </h3>
@@ -65,7 +65,7 @@ export default function CategorySidebar() {
               <input 
                 type="checkbox" 
                 defaultChecked={status === 'In Stock'}
-                style={{ accentColor: '#4B0082', width: '16px', height: '16px', cursor: 'pointer' }} 
+                style={{ accentColor: 'var(--color-primary)', width: '16px', height: '16px', cursor: 'pointer' }} 
               />
               {status}
             </label>

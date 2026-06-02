@@ -12,7 +12,7 @@ export default function ArtisanSpotlight() {
       borderRadius: '12px',
       boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)'
     }}>
-      <h2 style={{ fontSize: '2rem', color: '#4B0082', marginBottom: '0.25rem', fontFamily: 'Playfair Display, serif', fontWeight: 'bold' }}>
+      <h2 style={{ fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '0.25rem', fontFamily: 'var(--font-heading)', fontWeight: 'bold' }}>
         Artisan Spotlight
       </h2>
       <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1rem' }}>
@@ -23,12 +23,12 @@ export default function ArtisanSpotlight() {
         <div style={{ 
           width: '140px', 
           height: '140px', 
-          backgroundColor: '#4B0082', 
+          backgroundColor: 'var(--color-primary)', 
           borderRadius: '50%', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          color: '#FFFDD0',
+          color: 'var(--color-background)',
           fontSize: '1.1rem',
           fontWeight: 'bold',
           flexShrink: 0,
@@ -38,7 +38,7 @@ export default function ArtisanSpotlight() {
         </div>
         
         <div style={{ flex: '1', minWidth: '280px' }}>
-          <h3 style={{ margin: '0 0 0.75rem 0', color: '#4B0082', fontSize: '1.5rem', fontWeight: 'bold' }}>
+          <h3 style={{ margin: '0 0 0.75rem 0', color: 'var(--color-primary)', fontSize: '1.5rem', fontWeight: 'bold' }}>
             Oribi Teo-Iyalla
           </h3>
           <p style={{ margin: '0', color: '#334155', fontSize: '1.05rem', lineHeight: '1.7' }}>
