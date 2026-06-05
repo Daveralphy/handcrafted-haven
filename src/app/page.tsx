@@ -11,7 +11,7 @@ export default async function Home() {
   // 1. Grab the raw Vercel URL
   let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
-  // 2. FIX: Scrub the strict SSL tags from the string so they don't override our manual bypass
+  // 2. Scrub the strict SSL tags from the string so they don't override our manual bypass
   const connectionString = rawConnectionString
     .replace('?sslmode=require', '?')
     .replace('&sslmode=require', '')
@@ -20,11 +20,8 @@ export default async function Home() {
 
   let artisans: any[] = [];
   let products: any[] = [];
-  let debugMessage = "Connecting to database pipeline...";
 
-  if (!connectionString) {
-    debugMessage = "⚠️ No connection strings found! Please check Vercel variables.";
-  } else {
+  if (connectionString) {
     // 3. This manual SSL bypass will now work perfectly without interference
     const pool = new Pool({ 
       connectionString,
@@ -39,11 +36,7 @@ export default async function Home() {
       `);
       const realTableNames = tablesResult.rows.map(r => r.table_name);
 
-      if (realTableNames.length === 0) {
-        debugMessage = "🔗 Connected to Supabase successfully! But your database has 0 tables.";
-      } else {
-        debugMessage = `🔗 Connected! Discovered tables: [ ${realTableNames.join(', ')} ]. `;
-        
+      if (realTableNames.length > 0) {
         const userTable = realTableNames.find(t => t.toLowerCase() === 'user' || t.toLowerCase() === 'users');
         const productTable = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products');
 
@@ -69,7 +62,7 @@ export default async function Home() {
         }
       }
     } catch (error: any) {
-      debugMessage = `❌ Database Error context: ${error.message || error}`;
+      console.error("Database pipeline error:", error);
     } finally {
       await pool.end().catch(() => {});
     }
@@ -78,13 +71,6 @@ export default async function Home() {
   return (
     <div style={{ backgroundColor: 'var(--color-background)', fontFamily: 'var(--font-body)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 2rem', flexGrow: 1, width: '100%', boxSizing: 'border-box' }}>
-        
-        {/* Diagnostic Banner */}
-        <div style={{ backgroundColor: '#f1f5f9', border: '1px dashed #cbd5e1', borderRadius: '8px', padding: '1rem', marginBottom: '2rem', fontSize: '0.9rem', color: '#1e293b', fontFamily: 'monospace' }}>
-          <strong>System Diagnostic Readout:</strong> <br />
-          {debugMessage}
-        </div>
-
         <Hero />
         <ProductGrid initialProducts={products} />
         <ArtisanSpotlight artisans={artisans} />
