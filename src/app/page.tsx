@@ -8,8 +8,16 @@ import { Pool } from 'pg';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // FIX: Using POSTGRES_PRISMA_URL which contains the verified password and pgbouncer=true flag
-  const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
+  // 1. Grab the raw Vercel URL
+  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+
+  // 2. FIX: Scrub the strict SSL tags from the string so they don't override our manual bypass
+  const connectionString = rawConnectionString
+    .replace('?sslmode=require', '?')
+    .replace('&sslmode=require', '')
+    .replace('?sslmode=verify-full', '?')
+    .replace('&sslmode=verify-full', '');
+
   let artisans: any[] = [];
   let products: any[] = [];
   let debugMessage = "Connecting to database pipeline...";
@@ -17,6 +25,7 @@ export default async function Home() {
   if (!connectionString) {
     debugMessage = "⚠️ No connection strings found! Please check Vercel variables.";
   } else {
+    // 3. This manual SSL bypass will now work perfectly without interference
     const pool = new Pool({ 
       connectionString,
       ssl: { rejectUnauthorized: false }

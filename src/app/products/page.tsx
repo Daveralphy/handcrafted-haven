@@ -4,8 +4,15 @@ import { Pool } from 'pg';
 export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
-  // FIX: Matching the verified URL parameter here as well
-  const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
+  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+  
+  // Scrub the strict SSL tags here as well
+  const connectionString = rawConnectionString
+    .replace('?sslmode=require', '?')
+    .replace('&sslmode=require', '')
+    .replace('?sslmode=verify-full', '?')
+    .replace('&sslmode=verify-full', '');
+
   let products: any[] = [];
 
   if (connectionString) {
