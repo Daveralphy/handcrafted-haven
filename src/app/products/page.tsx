@@ -4,8 +4,8 @@ import { Pool } from 'pg';
 export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
-  // FIX: Using POSTGRES_URL (Port 6543) for IPv4 support on Vercel
-  const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  // FIX: Matching the verified URL parameter here as well
+  const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
   let products: any[] = [];
 
   if (connectionString) {
@@ -15,12 +15,16 @@ export default async function ProductsPage() {
     });
 
     try {
-      let productResult = await pool.query(`SELECT * FROM "Product" LIMIT 50;`).catch(() => null);
-      if (!productResult || productResult.rows.length === 0) {
-        productResult = await pool.query(`SELECT * FROM "products" LIMIT 50;`).catch(() => null);
-      }
+      const tablesResult = await pool.query(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public';
+      `);
+      const realTableNames = tablesResult.rows.map(r => r.table_name);
+      const productTable = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products');
 
-      if (productResult && productResult.rows) {
+      if (productTable) {
+        const productResult = await pool.query(`SELECT * FROM "${productTable}" LIMIT 50;`);
         products = productResult.rows.map((row: any) => ({
           id: row.id,
           title: row.title || row.name || 'Untitled Craft Item',
