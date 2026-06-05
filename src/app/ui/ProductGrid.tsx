@@ -3,26 +3,48 @@
 import React, { useEffect, useState } from 'react';
 import CategorySidebar from './CategorySidebar';
 
-/* Designed by Oribi */
+/* Designed by Oribi - 100% Dynamic Data Driven */
 
-// Mock Data replace and retrieve from the database in the future.
-const products = [
-  { id: 1, title: 'Hand-Carved Walnut Bowl', price: 85, category: 'Woodwork', availability: 'In Stock' },
-  { id: 2, title: 'Minimalist Silver Ring', price: 120, category: 'Jewelry', availability: 'In Stock' },
-  { id: 3, title: 'Earthenware Ceramic Vase', price: 65, category: 'Pottery', availability: 'Custom Order Only' },
-  { id: 4, title: 'Woven Cotton Throw Blanket', price: 110, category: 'Textiles', availability: 'In Stock' },
-  { id: 5, title: 'Mahogany Cutting Board', price: 45, category: 'Woodwork', availability: 'Custom Order Only' },
-  { id: 6, title: 'Beaded Drop Earrings', price: 75, category: 'Jewelry', availability: 'In Stock' },
-];
-const categories = Array.from(new Set(products.map((product) => product.category)));
-const availabilityOptions = Array.from(new Set(products.map((product) => product.availability)));
-const priceLimit = 200;
+interface DBProduct {
+  id: string | number;
+  title: string;
+  price: number;
+  category: string;
+  availability: string;
+}
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  initialProducts: DBProduct[];
+}
+
+export default function ProductGrid({ initialProducts = [] }: ProductGridProps) {
+  // Dynamically calculate existing categories from database rows
+  const categories = Array.from(new Set(initialProducts.map((product) => product.category || 'Uncategorized')));
+  
+  // Dynamically calculate availability options straight from database rows
+  const availabilityOptions = Array.from(new Set(initialProducts.map((product) => product.availability || 'Unknown')));
+  
+  // Find the absolute highest priced product in your live database dynamically
+  const liveMaxPrice = initialProducts.length > 0 
+    ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price || 0)))) 
+    : 100;
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>(categories);
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
-  const [maxPrice, setMaxPrice] = useState(priceLimit);
-  const [appliedMaxPrice, setAppliedMaxPrice] = useState(priceLimit);
+  const [maxPrice, setMaxPrice] = useState(liveMaxPrice);
+  const [appliedMaxPrice, setAppliedMaxPrice] = useState(liveMaxPrice);
+
+  // Keep state perfectly synchronized whenever database updates hit the client side runtime context safely
+  useEffect(() => {
+    const updatedCategories = Array.from(new Set(initialProducts.map((p) => p.category || 'Uncategorized')));
+    const updatedAvailability = Array.from(new Set(initialProducts.map((p) => p.availability || 'Unknown')));
+    const updatedMaxPrice = initialProducts.length > 0 ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price || 0)))) : 100;
+
+    setSelectedCategories(updatedCategories);
+    setSelectedAvailability(updatedAvailability);
+    setMaxPrice(updatedMaxPrice);
+    setAppliedMaxPrice(updatedMaxPrice);
+  }, [initialProducts]); // Fixed: removed liveMaxPrice from the array to maintain constant array size
 
   const toggleSelection = (
     value: string,
@@ -36,10 +58,10 @@ export default function ProductGrid() {
     );
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory = selectedCategories.includes(product.category);
-    const matchesAvailability = selectedAvailability.includes(product.availability);
-    const matchesPrice = appliedMaxPrice >= priceLimit || product.price <= appliedMaxPrice;
+  const filteredProducts = initialProducts.filter((product) => {
+    const matchesCategory = selectedCategories.includes(product.category || 'Uncategorized');
+    const matchesAvailability = selectedAvailability.includes(product.availability || 'Unknown');
+    const matchesPrice = Number(product.price || 0) <= appliedMaxPrice;
 
     return matchesCategory && matchesAvailability && matchesPrice;
   });
@@ -71,13 +93,14 @@ export default function ProductGrid() {
           selectedCategories={selectedCategories}
           selectedAvailability={selectedAvailability}
           maxPrice={maxPrice}
+          liveMaxLimit={liveMaxPrice}
           onCategoryChange={(category) => toggleSelection(category, selectedCategories, setSelectedCategories)}
           onAvailabilityChange={(availability) => toggleSelection(availability, selectedAvailability, setSelectedAvailability)}
           onMaxPriceChange={setMaxPrice}
         />
       </div>
 
-      {/* Right Column: Section Header + 6 Product Grid Cards */}
+      {/* Right Column: Section Header + Dynamic Product Grid Cards */}
       <div style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
         {/* Marketplace Section Header Row */}
@@ -97,7 +120,7 @@ export default function ProductGrid() {
           </span>
         </div>
 
-        {/* CSS Grid wrapping 6 cards evenly across multiple rows */}
+        {/* CSS Grid wrapping mapped data cards evenly across multiple rows */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -140,7 +163,7 @@ export default function ProductGrid() {
                 </h4>
                 <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem' }}>
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                    ${product.price.toFixed(2)}
+                    ${Number(product.price || 0).toFixed(2)}
                   </span>
                   <button type="button" style={{
                     backgroundColor: 'var(--color-accent)',

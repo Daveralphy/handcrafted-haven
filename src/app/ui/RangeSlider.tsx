@@ -1,7 +1,6 @@
 "use client";
 
-/* Designed by Porter Luke Frazier */
-// I thought I added enough weird logic that it should become it's own component.
+/* Designed by Porter Luke Frazier - Stabilized for Dynamic Limits */
 
 import React, { useEffect, useState } from 'react';
 
@@ -27,20 +26,26 @@ export default function RangeSlider({
   onChange,
 }: RangeSliderProps) {
   const [displayValuePosition, setDisplayValuePosition] = useState(value);
-  const labelPosition = `${((displayValuePosition - min) / (max - min)) * 100}%`;
-  const valueLabelTransform = displayValuePosition === min
+
+  // Sync state values instantly if the maximum pricing boundaries shift dynamically
+  useEffect(() => {
+    setDisplayValuePosition(value);
+  }, [value]); // Fixed: keeping hook array size completely fixed and minimal
+
+  // Dynamic safety guard boundary calculation eliminates the divide-by-zero errors when sliding rapidly
+  const rangeDenominator = max - min;
+  const clampedPositionValue = Math.min(Math.max(displayValuePosition, min), max);
+  const positionPercent = rangeDenominator > 0 
+    ? ((clampedPositionValue - min) / rangeDenominator) * 100 
+    : 100;
+
+  const labelPosition = `${positionPercent}%`;
+  
+  const valueLabelTransform = displayValuePosition <= min
     ? 'translateX(0)'
     : displayValuePosition >= max
       ? 'translateX(-100%)'
       : 'translateX(-50%)';
-
-  useEffect(() => {
-    const debounceTimer = window.setTimeout(() => {
-      setDisplayValuePosition(value);
-    }, 250);
-
-    return () => window.clearTimeout(debounceTimer);
-  }, [value]);
 
   return (
     <div>
@@ -56,7 +61,7 @@ export default function RangeSlider({
         {label}
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-        <div style={{ position: 'relative', height: '1.5rem' }}>
+        <div style={{ position: 'relative', height: '1.5rem', width: '100%' }}>
           <span style={{
             color: '#334155',
             fontSize: '0.95rem',
@@ -64,8 +69,7 @@ export default function RangeSlider({
             left: labelPosition,
             position: 'absolute',
             transform: valueLabelTransform,
-            // Adds an overshoot effect to the label.
-            transition: 'left 0.2s cubic-bezier(0.34, 1.35, 0.64, 1)',
+            transition: 'left 0.15s ease-out',
             whiteSpace: 'nowrap'
           }}>
             {formatValue(value)}
@@ -77,7 +81,11 @@ export default function RangeSlider({
           max={max}
           step={step}
           value={value}
-          onChange={(event) => onChange(Number(event.target.value))}
+          onChange={(event) => {
+            const newValue = Number(event.target.value);
+            setDisplayValuePosition(newValue);
+            onChange(newValue);
+          }}
           aria-label={ariaLabel}
           style={{ accentColor: 'var(--color-primary)', width: '100%', cursor: 'pointer' }}
         />

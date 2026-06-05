@@ -11,6 +11,7 @@ type CategorySidebarProps = {
   selectedCategories: string[];
   selectedAvailability: string[];
   maxPrice: number;
+  liveMaxLimit: number; // Dynamic limit prop added to match the database state
   onCategoryChange: (category: string) => void;
   onAvailabilityChange: (availability: string) => void;
   onMaxPriceChange: (maxPrice: number) => void;
@@ -22,6 +23,7 @@ export default function CategorySidebar({
   selectedCategories,
   selectedAvailability,
   maxPrice,
+  liveMaxLimit,
   onCategoryChange,
   onAvailabilityChange,
   onMaxPriceChange,
@@ -50,14 +52,15 @@ export default function CategorySidebar({
         Filter
       </h2>
 
+      {/* The RangeSlider max is now driven completely by the highest database entry price */}
       <RangeSlider
         label="Price Range"
         value={maxPrice}
         min={0}
-        max={200}
-        step={5}
+        max={liveMaxLimit}
+        step={1}
         ariaLabel="Maximum product price"
-        formatValue={(value) => value >= 200 ? 'Any' : `$${value}`}
+        formatValue={(value) => value >= liveMaxLimit ? 'Any' : `$${value}`}
         onChange={onMaxPriceChange}
       />
 
@@ -75,8 +78,8 @@ export default function CategorySidebar({
           Category
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {categories.map((category) => (
-            <label key={category} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#334155', fontSize: '0.95rem', fontWeight: '500', cursor: 'pointer' }}>
+          {categories.map((category, index) => (
+            <label key={`${category}-${index}`} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#334155', fontSize: '0.95rem', fontWeight: '500', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(category)}
@@ -89,7 +92,7 @@ export default function CategorySidebar({
         </div>
       </div>
 
-      {/* Group 3: Additional Filter (Availability Status) to make card taller */}
+      {/* Group 3: Additional Filter (Availability Status) */}
       <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
         <h3 style={{
           fontSize: '0.9rem',
@@ -103,8 +106,8 @@ export default function CategorySidebar({
           Availability
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {availabilityOptions.map((status) => (
-            <label key={status} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#334155', fontSize: '0.95rem', fontWeight: '500', cursor: 'pointer' }}>
+          {availabilityOptions.map((status, index) => (
+            <label key={`${status}-${index}`} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#334155', fontSize: '0.95rem', fontWeight: '500', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={selectedAvailability.includes(status)}
