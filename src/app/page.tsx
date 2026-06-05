@@ -13,24 +13,48 @@ export default async function Home() {
   let products: any[] = [];
 
   if (connectionString) {
-    // Explicitly configure the native pool driver to enforce authorized SSL handshakes
     const pool = new Pool({ 
       connectionString,
-      ssl: {
-        rejectUnauthorized: false // Bypasses self-signed certificate validation errors on Vercel
-      }
+      ssl: { rejectUnauthorized: false }
     });
     
     try {
-      // 1. Fetch live platform creators from the user base accounts table
-      const artisanResult = await pool.query(`SELECT * FROM "User" WHERE "role" = 'artisan' LIMIT 3;`);
-      artisans = artisanResult.rows;
+      // 1. Inspect the hidden PostgreSQL system catalog to find the exact case style of your tables
+      const systemTablesResult = await pool.query(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public';
+      `);
+      
+      const realTableNames = systemTablesResult.rows.map(r => r.table_name);
+      console.log("Discovered real database table layout signatures:", realTableNames);
 
-      // 2. Fetch live stock listings from your database product rows table
-      const productResult = await pool.query(`SELECT * FROM "Product" LIMIT 12;`);
-      products = productResult.rows;
+      // 2. Locate the user/accounts table regardless of capitalization (User, user, users)
+      const userTableName = realTableNames.find(t => t.toLowerCase() === 'user' || t.toLowerCase() === 'users') || 'User';
+      
+      // 3. Locate the product listings table regardless of capitalization (Product, product, products)
+      const productTableName = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products') || 'Product';
+
+      // 4. Safely execute the queries using the exact database string matching format discovered
+      const artisanResult = await pool.query(`SELECT * FROM "${userTableName}" WHERE "role" = 'artisan' OR role = 'artisan' LIMIT 3;`);
+      artisans = artisanResult.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name || row.username || 'Anonymous Artisan',
+        bio: row.bio || row.description || 'Specializing in unique handcrafted design items and sustainable creation.',
+        role: row.role
+      }));
+
+      const productResult = await pool.query(`SELECT * FROM "${productTableName}" LIMIT 12;`);
+      products = productResult.rows.map((row: any) => ({
+        id: row.id,
+        title: row.title || row.name || 'Untitled Craft Item',
+        price: row.price !== undefined ? Number(row.price) : 0,
+        category: row.category || 'Handcrafted',
+        availability: row.availability || (row.in_stock ? 'In Stock' : 'Custom Order Only')
+      }));
+
     } catch (error) {
-      console.error("Database fetch failed on landing page route pipeline:", error);
+      console.error("Automated system catalog discovery query failed:", error);
     } finally {
       await pool.end().catch(() => {});
     }
@@ -38,19 +62,15 @@ export default async function Home() {
 
   return (
     <div style={{ backgroundColor: 'var(--color-background)', fontFamily: 'var(--font-body)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 2rem', flexGrow: 1, width: '100%', boxSizing: 'border-box' }}>
-
         <Hero />
-
+        
+        {/* Completely dynamic payload strings passed directly */}
         <ProductGrid initialProducts={products} />
-
+        
         <ArtisanSpotlight artisans={artisans} />
-
       </main>
-
       <Footer />
-
     </div>
   );
 }
