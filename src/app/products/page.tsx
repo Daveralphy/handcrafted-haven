@@ -10,9 +10,15 @@ export default async function ProductsPage() {
   let products: any[] = [];
 
   if (connectionString) {
-    const pool = new Pool({ connectionString });
+    // Mirror the exact same production SSL handshake protocol here
+    const pool = new Pool({ 
+      connectionString,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
     try {
-      // Fetch live stock listings directly from your database product rows table
       const productResult = await pool.query(`SELECT * FROM "Product" LIMIT 50;`);
       products = productResult.rows;
     } catch (error) {
@@ -50,7 +56,6 @@ export default async function ProductsPage() {
           Explore Our Handcrafted Collection
         </h1>
 
-        {/* The ProductGrid component now receives live items directly from your database */}
         <ProductGrid initialProducts={products} />
       </section>
     </main>
