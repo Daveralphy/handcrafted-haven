@@ -1,9 +1,27 @@
-/* Designed by Porter Luke Frazier */
-
 import ProductGrid from "../ui/ProductGrid";
+import { Pool } from 'pg';
 
-// Catalog/Products page
-export default function ProductsPage() {
+/* Designed by Porter Luke Frazier - Powered by Live Database Data */
+
+export const dynamic = 'force-dynamic';
+
+export default async function ProductsPage() {
+  const connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL;
+  let products: any[] = [];
+
+  if (connectionString) {
+    const pool = new Pool({ connectionString });
+    try {
+      // Fetch live stock listings directly from your database product rows table
+      const productResult = await pool.query(`SELECT * FROM "Product" LIMIT 50;`);
+      products = productResult.rows;
+    } catch (error) {
+      console.error("Database fetch failed on products catalog subroute pipeline:", error);
+    } finally {
+      await pool.end().catch(() => {});
+    }
+  }
+
   return (
     <main
       style={{
@@ -32,7 +50,8 @@ export default function ProductsPage() {
           Explore Our Handcrafted Collection
         </h1>
 
-        <ProductGrid />
+        {/* The ProductGrid component now receives live items directly from your database */}
+        <ProductGrid initialProducts={products} />
       </section>
     </main>
   );
