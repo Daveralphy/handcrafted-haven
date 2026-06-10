@@ -18,33 +18,35 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ initialProducts = [] }: ProductGridProps) {
-  // Dynamically calculate existing categories from database rows
-  const categories = Array.from(new Set(initialProducts.map((product) => product.category || 'Uncategorized')));
-  
-  // Dynamically calculate availability options straight from database rows
-  const availabilityOptions = Array.from(new Set(initialProducts.map((product) => product.availability || 'Unknown')));
-  
-  // Find the absolute highest priced product in your live database dynamically
-  const liveMaxPrice = initialProducts.length > 0 
-    ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price || 0)))) 
-    : 100;
+  const categories = Array.from(new Set(initialProducts.map((p) => p.category)));
+  const availabilityOptions = Array.from(new Set(initialProducts.map((p) => p.availability)));
+  const liveMaxPrice = initialProducts.length > 0
+    ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price))))
+    : 0;
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(categories);
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
   const [maxPrice, setMaxPrice] = useState(liveMaxPrice);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState(liveMaxPrice);
 
-  // Keep state perfectly synchronized whenever database updates hit the client side runtime context safely
   useEffect(() => {
-    const updatedCategories = Array.from(new Set(initialProducts.map((p) => p.category || 'Uncategorized')));
-    const updatedAvailability = Array.from(new Set(initialProducts.map((p) => p.availability || 'Unknown')));
-    const updatedMaxPrice = initialProducts.length > 0 ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price || 0)))) : 100;
-
+    const updatedCategories = Array.from(new Set(initialProducts.map((p) => p.category)));
+    const updatedAvailability = Array.from(new Set(initialProducts.map((p) => p.availability)));
+    const updatedMaxPrice = initialProducts.length > 0
+      ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price))))
+      : 0;
     setSelectedCategories(updatedCategories);
     setSelectedAvailability(updatedAvailability);
     setMaxPrice(updatedMaxPrice);
     setAppliedMaxPrice(updatedMaxPrice);
-  }, [initialProducts]); // Fixed: removed liveMaxPrice from the array to maintain constant array size
+  }, [initialProducts]);
+
+  useEffect(() => {
+    const debounceTimer = window.setTimeout(() => {
+      setAppliedMaxPrice(maxPrice);
+    }, 250);
+    return () => window.clearTimeout(debounceTimer);
+  }, [maxPrice]);
 
   const toggleSelection = (
     value: string,
@@ -53,26 +55,39 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
   ) => {
     setSelectedValues(
       selectedValues.includes(value)
-        ? selectedValues.filter((selectedValue) => selectedValue !== value)
+        ? selectedValues.filter((v) => v !== value)
         : [...selectedValues, value]
     );
   };
 
   const filteredProducts = initialProducts.filter((product) => {
-    const matchesCategory = selectedCategories.includes(product.category || 'Uncategorized');
-    const matchesAvailability = selectedAvailability.includes(product.availability || 'Unknown');
-    const matchesPrice = Number(product.price || 0) <= appliedMaxPrice;
-
+    const matchesCategory = selectedCategories.includes(product.category);
+    const matchesAvailability = selectedAvailability.includes(product.availability);
+    const matchesPrice = Number(product.price) <= appliedMaxPrice;
     return matchesCategory && matchesAvailability && matchesPrice;
   });
 
-  useEffect(() => {
-    const debounceTimer = window.setTimeout(() => {
-      setAppliedMaxPrice(maxPrice);
-    }, 250);
-
-    return () => window.clearTimeout(debounceTimer);
-  }, [maxPrice]);
+  if (initialProducts.length === 0) {
+    return (
+      <div style={{
+        margin: '3rem 0',
+        padding: '4rem 2rem',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '12px',
+        textAlign: 'center',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+      }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧺</div>
+        <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', fontSize: '1.75rem', marginBottom: '0.75rem' }}>
+          No products yet
+        </h2>
+        <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+          Our artisans are busy crafting. Check back soon for new arrivals.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <section style={{
@@ -84,8 +99,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
       alignItems: 'flex-start',
       flexWrap: 'wrap'
     }}>
-
-      {/* Left Column: Slim Interactive Filter Sidebar Component */}
       <div style={{ flex: '0 0 240px', minWidth: '240px' }}>
         <CategorySidebar
           categories={categories}
@@ -100,10 +113,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
         />
       </div>
 
-      {/* Right Column: Section Header + Dynamic Product Grid Cards */}
       <div style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-        {/* Marketplace Section Header Row */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -120,7 +130,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
           </span>
         </div>
 
-        {/* CSS Grid wrapping mapped data cards evenly across multiple rows */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -137,7 +146,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
               display: 'flex',
               flexDirection: 'column'
             }}>
-              {/* Image Preview Block */}
               <div style={{
                 height: '160px',
                 backgroundColor: '#f1f5f9',
@@ -153,7 +161,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
                 [ {product.category} Image View ]
               </div>
 
-              {/* Context Detail Block */}
               <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flexGrow: 1 }}>
                 <span style={{ fontSize: '0.75rem', color: '#334155', fontWeight: 'bold', textTransform: 'uppercase' }}>
                   {product.category}
@@ -163,7 +170,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
                 </h4>
                 <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem' }}>
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                    ${Number(product.price || 0).toFixed(2)}
+                    ${Number(product.price).toFixed(2)}
                   </span>
                   <button type="button" style={{
                     backgroundColor: 'var(--color-accent)',
@@ -184,13 +191,20 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
         </div>
 
         {filteredProducts.length === 0 && (
-          <p style={{ color: '#334155', fontWeight: '500', margin: 0 }}>
-            No products match the selected filters.
-          </p>
+          <div style={{
+            padding: '3rem 2rem',
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '12px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔍</div>
+            <p style={{ color: '#64748b', fontSize: '1rem', margin: 0 }}>
+              No products match your current filters. Try adjusting your selection.
+            </p>
+          </div>
         )}
-
       </div>
-
     </section>
   );
 }
