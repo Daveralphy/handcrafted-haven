@@ -17,16 +17,17 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  title       String
-  price       Float
-  description String?
-  category    String?
-  imageUrl    String?
-  artisanId   String
-  artisan     User     @relation(fields: [artisanId], references: [id])
-  reviews     Review[]
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  title        String
+  price        Float
+  description  String?
+  category     String?
+  imageUrl     String?
+  availability String   @default("In Stock")
+  artisanId    String
+  artisan      User     @relation(fields: [artisanId], references: [id])
+  reviews      Review[]
+  createdAt    DateTime @default(now())
 }
 
 model Review {
