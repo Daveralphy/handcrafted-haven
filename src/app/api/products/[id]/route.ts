@@ -11,12 +11,12 @@ function getPool() {
   return new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const pool = getPool();
   try {
+    const { id } = await params;
     const body = await request.json();
     const { title, price, category, availability, description } = body;
-    const { id } = params;
 
     if (!title || !price || !category) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -43,10 +43,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const pool = getPool();
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const result = await pool.query(
       `DELETE FROM "Product" WHERE id = $1 RETURNING id;`,
