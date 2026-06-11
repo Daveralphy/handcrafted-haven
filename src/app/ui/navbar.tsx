@@ -3,6 +3,7 @@
 /* Designed by Porter Luke Frazier */
 
 import Link from "next/link";
+import { useState } from "react";
 import type { NavItem } from "../site-config";
 
 type NavAction = {
@@ -56,6 +57,25 @@ function CartIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+      />
+    </svg>
+  );
+}
+
 export default function Navbar({
   brandTitle,
   cartAction,
@@ -63,6 +83,8 @@ export default function Navbar({
   navItems = [],
   searchAction,
 }: NavbarProps) {
+  const [profileOpen, setProfileOpen] = useState(false);
+
   return (
     <header style={{ backgroundColor: 'var(--color-primary)', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
       <nav aria-label="Main navigation" style={{
@@ -124,6 +146,88 @@ export default function Navbar({
               </span>
             ) : null}
           </Link>
+
+          {/* Profile Icon with Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => setProfileOpen(!profileOpen)}
+              aria-label="Profile menu"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                color: 'var(--color-background)',
+                padding: '0',
+              }}
+              className="transition-colors hover:text-accent"
+            >
+              <ProfileIcon />
+            </button>
+
+            {profileOpen && (
+              <>
+                {/* Backdrop to close dropdown when clicking outside */}
+                <div
+                  onClick={() => setProfileOpen(false)}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 10,
+                  }}
+                />
+
+                {/* Dropdown Menu */}
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 0.75rem)',
+                  right: 0,
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                  minWidth: '180px',
+                  zIndex: 20,
+                  overflow: 'hidden',
+                }}>
+                  <Link
+                    href="/login"
+                    onClick={() => setProfileOpen(false)}
+                    style={{
+                      display: 'block',
+                      padding: '0.75rem 1.25rem',
+                      color: '#0f172a',
+                      textDecoration: 'none',
+                      fontSize: '0.95rem',
+                      fontWeight: '500',
+                      borderBottom: '1px solid #f1f5f9',
+                    }}
+                    className="hover:text-accent"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setProfileOpen(false)}
+                    style={{
+                      display: 'block',
+                      padding: '0.75rem 1.25rem',
+                      color: '#0f172a',
+                      textDecoration: 'none',
+                      fontSize: '0.95rem',
+                      fontWeight: '500',
+                    }}
+                    className="hover:text-accent"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
+
         </div>
       </nav>
     </header>

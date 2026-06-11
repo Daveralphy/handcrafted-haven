@@ -10,10 +10,10 @@ export const siteConfig = {
   description:
     "A virtual marketplace for unique handmade products and artisan stories.",
   navItems: [
-    { label: "Catalog", href: "/products" },
-    { label: "Link 2", href: "/link-2" },
-    { label: "Link 3", href: "/link-3" },
-    { label: "Link 4", href: "/link-4" },
+    { label: "Shop", href: "/products" },
+    { label: "About", href: "/about" },
+    { label: "Artisans", href: "/artisans" },
+    { label: "Contact", href: "/contact" },
   ] satisfies NavItem[],
   actions: {
     search: {
