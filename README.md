@@ -9,7 +9,7 @@ Handcrafted Haven is a virtual marketplace designed to connect talented artisans
 - Hann Dowyne Valcourt
 - Isaac Hooper
 - Porter Luke Frazier (Week 03 Group Lead)
-- Lehi Nyakno Daniel
+- Lehi Nyakno Daniel (Week 05 Group Lead )
 - Christiana Nwachukwu
 - Kamohelo Godfrey Mejaele
 

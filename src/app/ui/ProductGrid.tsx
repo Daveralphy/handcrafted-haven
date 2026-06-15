@@ -99,7 +99,7 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
       alignItems: 'flex-start',
       flexWrap: 'wrap'
     }}>
-      <div style={{ flex: '0 0 240px', minWidth: '240px' }}>
+      <div className="max-[700.98px]:!w-full max-[700.98px]:!basis-full max-[700.98px]:!min-w-0" style={{ flex: '0 0 240px', minWidth: '240px' }}>
         <CategorySidebar
           categories={categories}
           availabilityOptions={availabilityOptions}
@@ -113,7 +113,7 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
         />
       </div>
 
-      <div style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div className="max-[700.98px]:!w-full max-[700.98px]:!basis-full max-[700.98px]:!min-w-0" style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -130,7 +130,7 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
           </span>
         </div>
 
-        <div style={{
+        <div className="max-[700.98px]:!grid-cols-[minmax(0,1fr)]" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
           gap: '1.5rem',
