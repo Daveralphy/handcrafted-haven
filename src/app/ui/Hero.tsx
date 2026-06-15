@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 /* Designed by Christiana */
 
@@ -34,7 +35,7 @@ export default function Hero() {
         handmade products made with love and dedication.
       </p>
 
-      <a href="/products" style={{
+      <Link href="/products" style={{
         backgroundColor: 'var(--color-accent)',
         color: 'var(--color-primary)',
         padding: '1rem 2.5rem',
@@ -46,7 +47,7 @@ export default function Hero() {
         marginTop: '1rem'
       }}>
         Shop Now
-      </a>
+      </Link>
     </section>
   );
 }

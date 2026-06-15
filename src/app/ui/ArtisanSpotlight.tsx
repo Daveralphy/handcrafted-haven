@@ -58,7 +58,7 @@ export default function ArtisanSpotlight({ artisans = [] }: ArtisanSpotlightProp
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
         {artisans.map((artisan, index) => (
-          <div key={artisan.id} style={{
+          <div key={artisan.id} className="max-[700.98px]:justify-center max-[700.98px]:text-center" style={{
             display: 'flex',
             gap: '2.5rem',
             alignItems: 'center',
@@ -84,7 +84,7 @@ export default function ArtisanSpotlight({ artisans = [] }: ArtisanSpotlightProp
               {artisan.name ? artisan.name.charAt(0) : '?'}
             </div>
 
-            <div style={{ flex: '1', minWidth: '280px' }}>
+            <div className="max-[700.98px]:!basis-full max-[700.98px]:!min-w-0" style={{ flex: '1', minWidth: '280px' }}>
               <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-primary)', fontSize: '1.5rem', fontWeight: 'bold' }}>
                 {artisan.name}
               </h3>
