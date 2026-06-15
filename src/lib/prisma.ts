@@ -5,30 +5,38 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const rawConnectionString =
-  process.env.POSTGRES_PRISMA_URL ?? process.env.POSTGRES_URL;
+function createPrismaClient() {
+  const rawConnectionString =
+    process.env.POSTGRES_PRISMA_URL ??
+    process.env.POSTGRES_URL ??
+    process.env.POSTGRES_URL_NON_POOLING;
 
-if (!rawConnectionString) {
-  throw new Error("A PostgreSQL connection string is required.");
-}
+  if (!rawConnectionString) {
+    throw new Error("A PostgreSQL connection string is required.");
+  }
 
-const connectionString = rawConnectionString
-  .replace("?sslmode=require", "?")
-  .replace("&sslmode=require", "")
-  .replace("?sslmode=verify-full", "?")
-  .replace("&sslmode=verify-full", "");
+  const connectionString = rawConnectionString
+    .replace("?sslmode=require", "?")
+    .replace("&sslmode=require", "")
+    .replace("?sslmode=verify-full", "?")
+    .replace("&sslmode=verify-full", "");
 
-const adapter = new PrismaPg({
-  connectionString,
-  ssl: { rejectUnauthorized: false },
-});
+  const adapter = new PrismaPg({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  });
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  const client = new PrismaClient({
     adapter,
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+
+  return client;
+}
+
+export function getPrisma() {
+  return globalForPrisma.prisma ?? createPrismaClient();
 }

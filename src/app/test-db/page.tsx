@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -7,6 +7,7 @@ export default async function TestDB() {
   let errorMessage: string | null = null;
 
   try {
+    const prisma = getPrisma();
     // Reusing the global client instance resolves the Turbopack SSR environment parsing block
     users = await prisma.user.findMany();
   } catch (error: unknown) {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import ProductReviews from "../../ui/ProductReviews";
 import StarRating from "../../ui/StarRating";
 
@@ -16,6 +16,7 @@ export default async function ProductDetailsPage({
   params,
 }: ProductDetailsPageProps) {
   const { id } = await params;
+  const prisma = getPrisma();
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
