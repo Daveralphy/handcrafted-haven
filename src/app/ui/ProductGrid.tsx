@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import CategorySidebar from './CategorySidebar';
 
 /* Designed by Oribi - 100% Dynamic Data Driven */
@@ -171,18 +172,18 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
                     ${Number(product.price).toFixed(2)}
                   </span>
-                  <button type="button" style={{
+                  <Link href={`/products/${product.id}`} style={{
                     backgroundColor: 'var(--color-accent)',
                     color: 'var(--color-primary)',
-                    border: 'none',
                     padding: '0.5rem 1rem',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '0.85rem',
                     fontWeight: 'bold',
-                    cursor: 'pointer'
+                    textDecoration: 'none',
+                    fontFamily: 'var(--font-body)'
                   }}>
                     Details
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>
