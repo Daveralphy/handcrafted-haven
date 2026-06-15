@@ -123,7 +123,7 @@ export default function InventoryPanel({ artisans, initialProducts }: InventoryP
       }
 
       setForm(emptyForm);
-    } catch (error) {
+    } catch {
       showMessage('error', 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -143,7 +143,7 @@ export default function InventoryPanel({ artisans, initialProducts }: InventoryP
       setProducts(prev => prev.filter(p => p.id !== productId));
       setDeleteConfirmId(null);
       showMessage('success', 'Product deleted successfully.');
-    } catch (error) {
+    } catch {
       showMessage('error', 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);

@@ -40,7 +40,7 @@ async function main() {
     },
   });
 
-  const product2 = await prisma.product.create({
+  await prisma.product.create({
     data: {
       title: "Wooden Table",
       price: 25000,
@@ -62,7 +62,7 @@ async function main() {
     },
   });
 
-  const product4 = await prisma.product.create({
+  await prisma.product.create({
     data: {
       title: "Silver Bracelet",
       price: 8000,
@@ -84,7 +84,7 @@ async function main() {
     },
   });
 
-  const product6 = await prisma.product.create({
+  await prisma.product.create({
     data: {
       title: "Ceramic Bowl",
       price: 7000,

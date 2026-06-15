@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       // Auth will be wired here
       alert('Login flow ready — auth coming soon.');
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -108,7 +108,7 @@ export default function LoginPage() {
             </button>
 
             <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'none' }}>
                 Sign Up
               </Link>

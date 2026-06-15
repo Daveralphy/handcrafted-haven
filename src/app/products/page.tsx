@@ -3,8 +3,24 @@ import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
 
+interface ProductRow {
+  id: string | number;
+  title: string;
+  price: number | string;
+  category: string;
+  availability: string;
+}
+
+interface Product {
+  id: string | number;
+  title: string;
+  price: number;
+  category: string;
+  availability: string;
+}
+
 export default async function ProductsPage() {
-  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+  const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
     .replace('?sslmode=require', '?')
@@ -12,7 +28,7 @@ export default async function ProductsPage() {
     .replace('?sslmode=verify-full', '?')
     .replace('&sslmode=verify-full', '');
 
-  let products: any[] = [];
+  let products: Product[] = [];
   let loadError = false;
 
   if (connectionString) {
@@ -32,7 +48,7 @@ export default async function ProductsPage() {
 
       if (productTable) {
         const productResult = await pool.query(`SELECT * FROM "${productTable}" LIMIT 50;`);
-        products = productResult.rows.map((row: any) => ({
+        products = (productResult.rows as ProductRow[]).map((row) => ({
           id: row.id,
           title: row.title,
           price: Number(row.price),
@@ -44,7 +60,7 @@ export default async function ProductsPage() {
       console.error("Database connection error:", error);
       loadError = true;
     } finally {
-      await pool.end().catch(() => {});
+      await pool.end().catch(() => { });
     }
   }
 

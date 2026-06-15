@@ -27,10 +27,13 @@ export default function RangeSlider({
 }: RangeSliderProps) {
   const [displayValuePosition, setDisplayValuePosition] = useState(value);
 
-  // Sync state values instantly if the maximum pricing boundaries shift dynamically
   useEffect(() => {
-    setDisplayValuePosition(value);
-  }, [value]); // Fixed: keeping hook array size completely fixed and minimal
+    const debounceTimer = window.setTimeout(() => {
+      setDisplayValuePosition(value);
+    }, 250);
+
+    return () => window.clearTimeout(debounceTimer);
+  }, [value]);
 
   // Dynamic safety guard boundary calculation eliminates the divide-by-zero errors when sliding rapidly
   const rangeDenominator = max - min;
@@ -69,7 +72,8 @@ export default function RangeSlider({
             left: labelPosition,
             position: 'absolute',
             transform: valueLabelTransform,
-            transition: 'left 0.15s ease-out',
+            // Adds an overshoot effect to the label.
+            transition: 'left 0.2s cubic-bezier(0.34, 1.35, 0.64, 1)',
             whiteSpace: 'nowrap'
           }}>
             {formatValue(value)}
@@ -81,11 +85,7 @@ export default function RangeSlider({
           max={max}
           step={step}
           value={value}
-          onChange={(event) => {
-            const newValue = Number(event.target.value);
-            setDisplayValuePosition(newValue);
-            onChange(newValue);
-          }}
+          onChange={(event) => onChange(Number(event.target.value))}
           aria-label={ariaLabel}
           style={{ accentColor: 'var(--color-primary)', width: '100%', cursor: 'pointer' }}
         />

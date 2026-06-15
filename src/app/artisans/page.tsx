@@ -5,8 +5,24 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+interface ArtisanRow {
+  id: string;
+  name: string | null;
+  email: string;
+  createdAt: Date;
+  product_count: string;
+}
+
+interface Artisan {
+  id: string;
+  name: string | null;
+  email: string;
+  createdAt: Date;
+  productCount: number;
+}
+
 export default async function ArtisansPage() {
-  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+  const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
     .replace('?sslmode=require', '?')
@@ -14,7 +30,7 @@ export default async function ArtisansPage() {
     .replace('?sslmode=verify-full', '?')
     .replace('&sslmode=verify-full', '');
 
-  let artisans: any[] = [];
+  let artisans: Artisan[] = [];
   let loadError = false;
 
   if (connectionString) {
@@ -42,7 +58,7 @@ export default async function ArtisansPage() {
           GROUP BY u.id, u.name, u.email, u."createdAt"
           ORDER BY u.name;
         `);
-        artisans = result.rows.map((row: any) => ({
+        artisans = (result.rows as ArtisanRow[]).map((row) => ({
           id: row.id,
           name: row.name,
           email: row.email,

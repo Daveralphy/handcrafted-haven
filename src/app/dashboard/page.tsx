@@ -3,8 +3,38 @@ import InventoryPanel from '../ui/InventoryPanel';
 
 export const dynamic = 'force-dynamic';
 
+interface ArtisanRow {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface ProductRow {
+  id: string;
+  title: string;
+  price: number | string;
+  category: string;
+  availability: string;
+  description: string;
+  artisanId: string;
+  artisan_name: string | null;
+}
+
+type Artisan = ArtisanRow;
+
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  category: string;
+  availability: string;
+  description: string;
+  artisanId: string;
+  artisanName: string;
+}
+
 export default async function DashboardPage() {
-  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+  const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
     .replace('?sslmode=require', '?')
@@ -12,8 +42,8 @@ export default async function DashboardPage() {
     .replace('?sslmode=verify-full', '?')
     .replace('&sslmode=verify-full', '');
 
-  let artisans: any[] = [];
-  let products: any[] = [];
+  let artisans: Artisan[] = [];
+  let products: Product[] = [];
   let loadError = false;
 
   if (connectionString) {
@@ -34,7 +64,7 @@ export default async function DashboardPage() {
 
       if (userTable) {
         const artisanResult = await pool.query(`SELECT id, name, email FROM "${userTable}" WHERE role = 'artisan' ORDER BY name;`);
-        artisans = artisanResult.rows.map((row: any) => ({
+        artisans = (artisanResult.rows as ArtisanRow[]).map((row) => ({
           id: row.id,
           name: row.name,
           email: row.email,
@@ -48,7 +78,7 @@ export default async function DashboardPage() {
           LEFT JOIN "User" u ON p."artisanId" = u.id
           ORDER BY p."createdAt" DESC;
         `);
-        products = productResult.rows.map((row: any) => ({
+        products = (productResult.rows as ProductRow[]).map((row) => ({
           id: row.id,
           title: row.title,
           price: Number(row.price),
@@ -56,10 +86,10 @@ export default async function DashboardPage() {
           availability: row.availability,
           description: row.description,
           artisanId: row.artisanId,
-          artisanName: row.artisan_name,
+          artisanName: row.artisan_name ?? '',
         }));
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Dashboard database error:", error);
       loadError = true;
     } finally {

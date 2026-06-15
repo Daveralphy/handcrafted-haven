@@ -18,6 +18,17 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ initialProducts = [] }: ProductGridProps) {
+  const productDataKey = JSON.stringify(initialProducts);
+
+  return (
+    <ProductGridContent
+      key={productDataKey}
+      initialProducts={initialProducts}
+    />
+  );
+}
+
+function ProductGridContent({ initialProducts }: ProductGridProps) {
   const categories = Array.from(new Set(initialProducts.map((p) => p.category)));
   const availabilityOptions = Array.from(new Set(initialProducts.map((p) => p.availability)));
   const liveMaxPrice = initialProducts.length > 0
@@ -28,18 +39,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
   const [maxPrice, setMaxPrice] = useState(liveMaxPrice);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState(liveMaxPrice);
-
-  useEffect(() => {
-    const updatedCategories = Array.from(new Set(initialProducts.map((p) => p.category)));
-    const updatedAvailability = Array.from(new Set(initialProducts.map((p) => p.availability)));
-    const updatedMaxPrice = initialProducts.length > 0
-      ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price))))
-      : 0;
-    setSelectedCategories(updatedCategories);
-    setSelectedAvailability(updatedAvailability);
-    setMaxPrice(updatedMaxPrice);
-    setAppliedMaxPrice(updatedMaxPrice);
-  }, [initialProducts]);
 
   useEffect(() => {
     const debounceTimer = window.setTimeout(() => {
