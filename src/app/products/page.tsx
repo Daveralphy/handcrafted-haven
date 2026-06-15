@@ -19,7 +19,15 @@ interface Product {
   availability: string;
 }
 
-export default async function ProductsPage() {
+interface ProductsPageProps {
+  searchParams: Promise<{
+    artisan?: string | string[];
+  }>;
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const { artisan } = await searchParams;
+  const artisanId = Array.isArray(artisan) ? artisan[0] : artisan;
   const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
@@ -47,7 +55,16 @@ export default async function ProductsPage() {
       const productTable = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products');
 
       if (productTable) {
-        const productResult = await pool.query(`SELECT * FROM "${productTable}" LIMIT 50;`);
+        const productQuery = artisanId
+          ? {
+              text: `SELECT * FROM "${productTable}" WHERE "artisanId" = $1 LIMIT 50;`,
+              values: [artisanId],
+            }
+          : {
+              text: `SELECT * FROM "${productTable}" LIMIT 50;`,
+              values: [],
+            };
+        const productResult = await pool.query(productQuery);
         products = (productResult.rows as ProductRow[]).map((row) => ({
           id: row.id,
           title: row.title,
