@@ -4,10 +4,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 type Role = 'customer' | 'artisan' | null;
 
 export default function SignupPage() {
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [role, setRole] = useState<Role>(null);
   const [form, setForm] = useState({
@@ -19,6 +22,7 @@ export default function SignupPage() {
     bio: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFormChange = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -37,7 +41,7 @@ export default function SignupPage() {
     setStep(2);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
       setError('Please fill in all required fields.');
@@ -51,8 +55,56 @@ export default function SignupPage() {
       setError('Password must be at least 6 characters.');
       return;
     }
-    // Auth will be wired here
-    alert('Signup flow ready — auth coming soon.');
+
+    setIsLoading(true);
+
+    try {
+      const supabase = createClient();
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            name: form.name,
+            role: role,
+            specialty: form.specialty || null,
+            bio: form.bio || null,
+          },
+        },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      // Insert user into our own User table
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: user.id,
+            email: form.email,
+            name: form.name,
+            role: role,
+          }),
+        });
+      }
+
+      if (role === 'artisan') {
+        router.push('/dashboard');
+      } else {
+        router.push('/');
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -266,6 +318,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={handleSubmit}
+                  disabled={isLoading}
                   style={{
                     flex: 2,
                     backgroundColor: 'var(--color-accent)',
@@ -275,10 +328,11 @@ export default function SignupPage() {
                     borderRadius: '8px',
                     fontSize: '1rem',
                     fontWeight: 'bold',
-                    cursor: 'pointer',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    opacity: isLoading ? 0.7 : 1,
                   }}
                 >
-                  Create Account
+                  {isLoading ? 'Creating account...' : 'Create Account'}
                 </button>
               </div>
 
