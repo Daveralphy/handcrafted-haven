@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import CategorySidebar from './CategorySidebar';
 
 /* Designed by Oribi - 100% Dynamic Data Driven */
@@ -18,6 +19,17 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ initialProducts = [] }: ProductGridProps) {
+  const productDataKey = JSON.stringify(initialProducts);
+
+  return (
+    <ProductGridContent
+      key={productDataKey}
+      initialProducts={initialProducts}
+    />
+  );
+}
+
+function ProductGridContent({ initialProducts }: ProductGridProps) {
   const categories = Array.from(new Set(initialProducts.map((p) => p.category)));
   const availabilityOptions = Array.from(new Set(initialProducts.map((p) => p.availability)));
   const liveMaxPrice = initialProducts.length > 0
@@ -28,18 +40,6 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>(availabilityOptions);
   const [maxPrice, setMaxPrice] = useState(liveMaxPrice);
   const [appliedMaxPrice, setAppliedMaxPrice] = useState(liveMaxPrice);
-
-  useEffect(() => {
-    const updatedCategories = Array.from(new Set(initialProducts.map((p) => p.category)));
-    const updatedAvailability = Array.from(new Set(initialProducts.map((p) => p.availability)));
-    const updatedMaxPrice = initialProducts.length > 0
-      ? Math.ceil(Math.max(...initialProducts.map(p => Number(p.price))))
-      : 0;
-    setSelectedCategories(updatedCategories);
-    setSelectedAvailability(updatedAvailability);
-    setMaxPrice(updatedMaxPrice);
-    setAppliedMaxPrice(updatedMaxPrice);
-  }, [initialProducts]);
 
   useEffect(() => {
     const debounceTimer = window.setTimeout(() => {
@@ -99,7 +99,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
       alignItems: 'flex-start',
       flexWrap: 'wrap'
     }}>
-      <div style={{ flex: '0 0 240px', minWidth: '240px' }}>
+      <div className="max-[700.98px]:!w-full max-[700.98px]:!basis-full max-[700.98px]:!min-w-0" style={{ flex: '0 0 240px', minWidth: '240px' }}>
         <CategorySidebar
           categories={categories}
           availabilityOptions={availabilityOptions}
@@ -113,7 +113,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
         />
       </div>
 
-      <div style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div className="max-[700.98px]:!w-full max-[700.98px]:!basis-full max-[700.98px]:!min-w-0" style={{ flex: '1 1 0px', minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -130,7 +130,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
           </span>
         </div>
 
-        <div style={{
+        <div className="max-[700.98px]:!grid-cols-[minmax(0,1fr)]" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
           gap: '1.5rem',
@@ -172,18 +172,18 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
                     ${Number(product.price).toFixed(2)}
                   </span>
-                  <button type="button" style={{
+                  <Link href={`/products/${product.id}`} style={{
                     backgroundColor: 'var(--color-accent)',
                     color: 'var(--color-primary)',
-                    border: 'none',
                     padding: '0.5rem 1rem',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '0.85rem',
                     fontWeight: 'bold',
-                    cursor: 'pointer'
+                    textDecoration: 'none',
+                    fontFamily: 'var(--font-body)'
                   }}>
                     Details
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>

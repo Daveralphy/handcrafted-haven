@@ -45,6 +45,25 @@ function ProfileIcon() {
   );
 }
 
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      {open ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      )}
+    </svg>
+  );
+}
+
 export default function Navbar({
   brandTitle,
   cartAction,
@@ -52,7 +71,7 @@ export default function Navbar({
   navItems = [],
   searchAction,
 }: NavbarProps) {
-  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -91,44 +110,103 @@ export default function Navbar({
 
   return (
     <header style={{ backgroundColor: 'var(--color-primary)', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
-      <nav aria-label="Main navigation" style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '1.25rem 2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxSizing: 'border-box'
-      }}>
+      <style>{`
+        @media (max-width: 700px) {
+          .mobile-nav-menu {
+            padding: 0.5rem !important;
+          }
 
-        <Link href="/" className="text-background no-underline transition-colors hover:text-accent" style={{
-          fontFamily: 'var(--font-heading)',
-          fontSize: '1.75rem',
-          fontWeight: 'bold',
-          letterSpacing: '0.5px'
-        }}>
+          .mobile-nav-item {
+            padding: 0.4rem 0.75rem 0.4rem 1.25rem !important;
+          }
+        }
+      `}</style>
+      <nav
+        aria-label="Main navigation"
+        className="relative max-[700.98px]:!px-4 max-[700.98px]:!py-3"
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '1.25rem 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxSizing: 'border-box'
+        }}
+      >
+
+        {/* Brand Logo Title Left */}
+        <Link
+          href="/"
+          className="text-background no-underline transition-colors hover:text-accent max-[700.98px]:max-w-[calc(100%_-_3.5rem)] max-[700.98px]:text-[1.6rem] max-[700.98px]:leading-[1.15]"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1.75rem',
+            fontWeight: 'bold',
+            letterSpacing: '0.5px'
+          }}
+        >
           {brandTitle}
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+        <button
+          type="button"
+          className="hidden cursor-pointer rounded-md border-0 bg-transparent p-2 text-background transition-colors hover:text-accent focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[700.98px]:flex"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="site-navigation-links"
+          onClick={() => {
+            setMobileMenuOpen((open) => !open);
+            setProfileOpen(false);
+          }}
+        >
+          <MenuIcon open={mobileMenuOpen} />
+        </button>
+
+        {/* Navigation Items Right */}
+        <div
+          id="site-navigation-links"
+          className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-72 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${
+            mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
+          }`}
+          style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}
+        >
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="text-[#e2d9f3] no-underline transition-colors hover:text-accent" style={{ fontWeight: '600', fontSize: '1rem' }}>
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="mobile-nav-item text-[#e2d9f3] no-underline transition-colors hover:text-accent max-[700.98px]:min-h-9 max-[700.98px]:w-full max-[700.98px]:rounded-md max-[700.98px]:hover:bg-white/10"
+              style={{
+                fontWeight: '600',
+                fontSize: '1rem'
+              }}
+            >
               {item.label}
             </Link>
           ))}
 
-          <Link href={searchAction.href} aria-label={searchAction.label} className="text-background transition-colors hover:text-accent" style={{ display: 'flex', alignItems: 'center' }}>
+          <Link
+            href={searchAction.href}
+            aria-label={searchAction.label}
+            onClick={() => setMobileMenuOpen(false)}
+            className="mobile-nav-item text-background transition-colors hover:text-accent max-[700.98px]:min-h-9 max-[700.98px]:w-full max-[700.98px]:gap-3 max-[700.98px]:rounded-md max-[700.98px]:hover:bg-white/10"
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
             <SearchIcon />
+            <span className="hidden max-[700.98px]:flex">{searchAction.label}</span>
           </Link>
 
           <Link
             href={cartAction.href}
             aria-label={`${cartAction.label} with ${cartItemCount} items`}
-            className="text-background transition-colors hover:text-accent"
+            onClick={() => setMobileMenuOpen(false)}
+            className="mobile-nav-item text-background transition-colors hover:text-accent max-[700.98px]:min-h-9 max-[700.98px]:w-full max-[700.98px]:gap-3 max-[700.98px]:rounded-md max-[700.98px]:hover:bg-white/10"
             style={{ display: 'flex', alignItems: 'center', position: 'relative' }}
           >
             <CartIcon />
-            {cartItemCount > 0 && (
+            <span className="hidden max-[700.98px]:flex">{cartAction.label}</span>
+            {cartItemCount > 0 ? (
               <span style={{
                 position: 'absolute',
                 top: '-6px',
@@ -147,11 +225,13 @@ export default function Navbar({
           </Link>
 
           {/* Profile Icon with Dropdown */}
-          <div style={{ position: 'relative' }}>
+          <div className="max-[700.98px]:w-full" style={{ position: 'relative' }}>
             <button
               type="button"
-              onClick={() => setProfileOpen(!profileOpen)}
+              onClick={() => setProfileOpen((open) => !open)}
               aria-label="Profile menu"
+              aria-expanded={profileOpen}
+              className="mobile-nav-item transition-colors hover:text-accent max-[700.98px]:min-h-9 max-[700.98px]:w-full max-[700.98px]:justify-start max-[700.98px]:gap-3 max-[700.98px]:rounded-md max-[700.98px]:hover:bg-white/10"
               style={{
                 background: user ? 'var(--color-accent)' : 'none',
                 border: 'none',
@@ -167,9 +247,9 @@ export default function Navbar({
                 fontWeight: 'bold',
                 fontSize: '0.85rem',
               }}
-              className="transition-colors hover:text-accent"
             >
-              {loading ? <ProfileIcon /> : user ? initials || <ProfileIcon /> : <ProfileIcon />}
+              <ProfileIcon />
+              <span className="hidden max-[700.98px]:flex">Account</span>
             </button>
 
             {profileOpen && (

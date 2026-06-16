@@ -7,8 +7,40 @@ import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
 
+interface ProductRow {
+  id: string | number;
+  title: string;
+  price: number | string;
+  category: string;
+  availability: string;
+}
+
+interface ArtisanRow {
+  id: string | number;
+  name: string;
+  role: string;
+  email: string;
+  createdAt: Date | string;
+}
+
+interface Product {
+  id: string | number;
+  title: string;
+  price: number;
+  category: string;
+  availability: string;
+}
+
+interface Artisan {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  createdAt: string;
+}
+
 export default async function Home() {
-  let rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
+  const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
     .replace('?sslmode=require', '?')
@@ -16,8 +48,8 @@ export default async function Home() {
     .replace('?sslmode=verify-full', '?')
     .replace('&sslmode=verify-full', '');
 
-  let artisans: any[] = [];
-  let products: any[] = [];
+  let artisans: Artisan[] = [];
+  let products: Product[] = [];
   let loadError = false;
 
   if (connectionString) {
@@ -40,7 +72,7 @@ export default async function Home() {
 
         if (productTable) {
           const productResult = await pool.query(`SELECT * FROM "${productTable}" LIMIT 12;`);
-          products = productResult.rows.map((row: any) => ({
+          products = (productResult.rows as ProductRow[]).map((row) => ({
             id: row.id,
             title: row.title,
             price: Number(row.price),
@@ -51,16 +83,18 @@ export default async function Home() {
 
         if (userTable) {
           const artisanResult = await pool.query(`SELECT * FROM "${userTable}" WHERE role = 'artisan' LIMIT 3;`);
-          artisans = artisanResult.rows.map((row: any) => ({
-            id: row.id,
+          artisans = (artisanResult.rows as ArtisanRow[]).map((row) => ({
+            id: String(row.id),
             name: row.name,
             role: row.role,
             email: row.email,
-            createdAt: row.createdAt,
+            createdAt: row.createdAt instanceof Date
+              ? row.createdAt.toISOString()
+              : row.createdAt,
           }));
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Database pipeline error:", error);
       loadError = true;
     } finally {

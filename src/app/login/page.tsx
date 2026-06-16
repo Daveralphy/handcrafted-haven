@@ -22,25 +22,9 @@ export default function LoginPage() {
     }
     setIsLoading(true);
     try {
-      const supabase = createClient();
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        setError("Invalid email or password. Please try again.");
-        return;
-      }
-
-      const role = data.user?.user_metadata?.role;
-      if (role === 'artisan') {
-        router.push('/dashboard');
-      } else {
-        router.push('/');
-      }
-      router.refresh();
-    } catch (err) {
+      // Auth will be wired here
+      alert('Login flow ready — auth coming soon.');
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -127,7 +111,7 @@ export default function LoginPage() {
             </button>
 
             <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'none' }}>
                 Sign Up
               </Link>
