@@ -9,6 +9,7 @@ interface ArtisanRow {
   name: string;
   email: string;
   bio: string | null;
+  imageUrl: string | null;
 }
 
 interface ProductRow {
@@ -81,13 +82,14 @@ export default async function DashboardPage() {
         `, [userTable]);
         const userColumns = columnsResult.rows.map((row: { column_name: string }) => row.column_name);
         const bioSelect = userColumns.includes('bio') ? ', bio' : ', NULL as bio';
+        const imageSelect = userColumns.includes('imageUrl') ? ', "imageUrl"' : ', NULL as "imageUrl"';
         const artisanQuery = showProfileSelector
           ? {
-              text: `SELECT id, name, email${bioSelect} FROM "${userTable}" WHERE role = 'artisan' ORDER BY name;`,
+              text: `SELECT id, name, email${bioSelect}${imageSelect} FROM "${userTable}" WHERE role = 'artisan' ORDER BY name;`,
               values: [],
             }
           : {
-              text: `SELECT id, name, email${bioSelect} FROM "${userTable}" WHERE role = 'artisan' AND id = $1 LIMIT 1;`,
+              text: `SELECT id, name, email${bioSelect}${imageSelect} FROM "${userTable}" WHERE role = 'artisan' AND id = $1 LIMIT 1;`,
               values: [loggedInArtisanId],
             };
         const artisanResult = await pool.query(artisanQuery);
@@ -96,6 +98,7 @@ export default async function DashboardPage() {
           name: row.name,
           email: row.email,
           bio: row.bio,
+          imageUrl: row.imageUrl || null,
         }));
       }
 

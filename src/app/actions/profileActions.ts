@@ -69,3 +69,58 @@ export async function updateProfileDescription({
     await pool.end().catch(() => { });
   }
 }
+
+export async function updateProfileImage({
+  imageUrl,
+  artisanId,
+}: {
+  imageUrl: string;
+  artisanId: string;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.user_metadata?.role !== "artisan") {
+    return { error: "Unauthorized" };
+  }
+
+  if (typeof imageUrl !== "string") {
+    return { error: "Image URL must be text." };
+  }
+
+  const targetArtisanId =
+    process.env.NODE_ENV !== "production" && typeof artisanId === "string"
+      ? artisanId
+      : user.id;
+
+  const pool = getPool();
+
+  try {
+    await pool.query(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "imageUrl" TEXT;`);
+
+    const result = await pool.query(
+      `UPDATE "User"
+       SET "imageUrl" = $1
+       WHERE id = $2 AND role = 'artisan'
+       RETURNING id, "imageUrl";`,
+      [imageUrl.trim() || null, targetArtisanId]
+    );
+
+    if (result.rowCount === 0) {
+      return { error: "Profile not found." };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath(`/artisans`);
+    revalidatePath(`/artisans/${targetArtisanId}`);
+
+    return { profile: result.rows[0] };
+  } catch (error) {
+    console.error("Profile image update error:", error);
+    return { error: "Failed to update profile image." };
+  } finally {
+    await pool.end().catch(() => { });
+  }
+}

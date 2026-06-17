@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { updateProfileDescription } from '@/app/actions/profileActions';
+import { updateProfileDescription, updateProfileImage } from '@/app/actions/profileActions';
 import { createProduct, deleteProduct, updateProduct } from '@/app/actions/productActions';
 
 interface Artisan {
@@ -10,6 +10,7 @@ interface Artisan {
   name: string;
   email: string;
   bio: string | null;
+  imageUrl: string | null;
 }
 
 interface Product {
@@ -45,7 +46,6 @@ const emptyForm = {
 
 function getDefaultProfileDescription(artisan?: Artisan) {
   const displayName = artisan?.name || 'Independent Artisan';
-
   return `${displayName} is part of the Handcrafted Haven maker community, sharing thoughtfully crafted pieces with shoppers who value personal, handmade work.`;
 }
 
@@ -66,9 +66,11 @@ export default function InventoryPanel({
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [form, setForm] = useState(emptyForm);
   const [bioDraft, setBioDraft] = useState(getProfileDescriptionDraft(defaultArtisan));
+  const [imageUrlDraft, setImageUrlDraft] = useState(defaultArtisan?.imageUrl || '');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingBio, setIsSavingBio] = useState(false);
+  const [isSavingImage, setIsSavingImage] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -88,6 +90,7 @@ export default function InventoryPanel({
     const nextArtisan = artisans.find(a => a.id === artisanId);
     setSelectedArtisanId(artisanId);
     setBioDraft(getProfileDescriptionDraft(nextArtisan));
+    setImageUrlDraft(nextArtisan?.imageUrl || '');
     setEditingId(null);
     setForm(emptyForm);
   };
@@ -97,30 +100,50 @@ export default function InventoryPanel({
       showMessage('error', 'Your artisan profile could not be found.');
       return;
     }
-
     setIsSavingBio(true);
-
     try {
       const data = await updateProfileDescription({
         description: bioDraft,
         artisanId: selectedArtisanId,
       });
-
       if (data.error) {
         showMessage('error', data.error || 'Could not update your profile description.');
         return;
       }
-
       const savedBio = data.profile?.bio || '';
       setBioDraft(savedBio || getDefaultProfileDescription(selectedArtisan));
-      setArtisans(prev => prev.map(artisan => (
-        artisan.id === selectedArtisanId ? { ...artisan, bio: savedBio || null } : artisan
-      )));
+      setArtisans(prev => prev.map(a => a.id === selectedArtisanId ? { ...a, bio: savedBio || null } : a));
       showMessage('success', 'Profile description updated successfully.');
     } catch {
       showMessage('error', 'Something went wrong. Please try again.');
     } finally {
       setIsSavingBio(false);
+    }
+  };
+
+  const handleSaveImage = async () => {
+    if (!selectedArtisanId) {
+      showMessage('error', 'Your artisan profile could not be found.');
+      return;
+    }
+    setIsSavingImage(true);
+    try {
+      const data = await updateProfileImage({
+        imageUrl: imageUrlDraft,
+        artisanId: selectedArtisanId,
+      });
+      if (data.error) {
+        showMessage('error', data.error || 'Could not update your profile image.');
+        return;
+      }
+      const savedImageUrl = data.profile?.imageUrl || '';
+      setImageUrlDraft(savedImageUrl);
+      setArtisans(prev => prev.map(a => a.id === selectedArtisanId ? { ...a, imageUrl: savedImageUrl || null } : a));
+      showMessage('success', 'Profile image updated successfully.');
+    } catch {
+      showMessage('error', 'Something went wrong. Please try again.');
+    } finally {
+      setIsSavingImage(false);
     }
   };
 
@@ -155,9 +178,7 @@ export default function InventoryPanel({
       showMessage('error', 'Please enter a valid price.');
       return;
     }
-
     setIsSubmitting(true);
-
     try {
       const data = editingId
         ? await updateProduct(editingId, {
@@ -169,14 +190,14 @@ export default function InventoryPanel({
             imageUrl: form.imageUrl,
           })
         : await createProduct({
-          title: form.title,
-          price: Number(form.price),
-          category: form.category,
-          availability: form.availability,
-          description: form.description,
-          imageUrl: form.imageUrl,
-          artisanId: selectedArtisanId,
-        });
+            title: form.title,
+            price: Number(form.price),
+            category: form.category,
+            availability: form.availability,
+            description: form.description,
+            imageUrl: form.imageUrl,
+            artisanId: selectedArtisanId,
+          });
 
       if (data.error || !data.product) {
         showMessage('error', data.error || 'Something went wrong. Please try again.');
@@ -191,7 +212,6 @@ export default function InventoryPanel({
         setProducts(prev => [{ ...data.product, artisanName: selectedArtisan?.name || '' }, ...prev]);
         showMessage('success', 'Product added successfully.');
       }
-
       setForm(emptyForm);
     } catch {
       showMessage('error', 'Something went wrong. Please try again.');
@@ -204,12 +224,10 @@ export default function InventoryPanel({
     setIsSubmitting(true);
     try {
       const result = await deleteProduct(productId);
-
       if (result.error) {
         showMessage('error', result.error || 'Could not delete the product. Please try again.');
         return;
       }
-
       setProducts(prev => prev.filter(p => p.id !== productId));
       setDeleteConfirmId(null);
       showMessage('success', 'Product deleted successfully.');
@@ -276,6 +294,90 @@ export default function InventoryPanel({
 
       {selectedArtisanId && (
         <>
+          {/* Profile Image Section */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{ marginBottom: '1rem' }}>
+              <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 'bold', margin: '0 0 0.35rem 0' }}>
+                Profile Image
+              </h2>
+              <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0 }}>
+                This appears on your public artisan profile and the artisans page.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 80px', gap: '1rem', alignItems: 'center' }}>
+              <input
+                type="url"
+                value={imageUrlDraft}
+                onChange={e => setImageUrlDraft(e.target.value)}
+                placeholder="https://example.com/your-photo.jpg"
+                style={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  fontSize: '0.95rem',
+                  outline: 'none',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                backgroundColor: 'var(--color-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                position: 'relative',
+                boxShadow: '0 4px 12px rgba(75, 0, 130, 0.2)',
+              }}>
+                {imageUrlDraft ? (
+                  <Image
+                    src={imageUrlDraft}
+                    alt="Profile preview"
+                    fill
+                    sizes="80px"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <span style={{ color: 'var(--color-background)', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                    {selectedArtisan?.name?.charAt(0).toUpperCase() || '?'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveImage}
+              disabled={isSavingImage}
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-primary)',
+                border: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '8px',
+                fontSize: '0.95rem',
+                fontWeight: 'bold',
+                cursor: isSavingImage ? 'not-allowed' : 'pointer',
+                opacity: isSavingImage ? 0.7 : 1,
+                marginTop: '1rem',
+              }}
+            >
+              {isSavingImage ? 'Saving Image...' : 'Save Profile Image'}
+            </button>
+          </div>
+
+          {/* Profile Description Section */}
           <div style={{
             backgroundColor: '#ffffff',
             border: '1px solid #e2e8f0',
@@ -330,7 +432,7 @@ export default function InventoryPanel({
             </button>
           </div>
 
-          {/* Add / Edit Form */}
+          {/* Add / Edit Product Form */}
           <div style={{
             backgroundColor: '#ffffff',
             border: '1px solid #e2e8f0',
