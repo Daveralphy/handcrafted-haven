@@ -39,6 +39,16 @@ a:hover {
   color: var(--color-accent);
 }
 
+@media (max-width: 700px) {
+  .mobile-nav-menu {
+    padding: 0.75rem !important;
+  }
+
+  .mobile-nav-item {
+    padding: 0.65rem 0.9rem !important;
+  }
+}
+
 @layer components {
   a:focus-visible {
     @apply outline outline-2 outline-offset-4 outline-accent;

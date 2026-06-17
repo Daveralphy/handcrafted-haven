@@ -7,6 +7,7 @@ import { getPrisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import ProductReviews from "../../ui/ProductReviews";
 import StarRating from "../../ui/StarRating";
+import AddToCartButton from "../../ui/AddToCartButton";
 
 export const dynamic = "force-dynamic";
 
@@ -209,22 +210,32 @@ export default async function ProductDetailsPage({
             Availability: {product.availability}
           </span>
 
-          <Link
-            href="/products"
-            style={{
-              alignSelf: "flex-start",
-              padding: "0.75rem 1rem",
-              color: "var(--color-primary)",
-              backgroundColor: "var(--color-accent)",
-              border: "none",
-              borderRadius: "8px",
-              textDecoration: "none",
-              fontWeight: 700,
-              fontFamily: "var(--font-body)",
-            }}
-          >
-            Back to products
-          </Link>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+            <Link
+              href="/products"
+              style={{
+                alignSelf: "flex-start",
+                padding: "0.75rem 1rem",
+                color: "var(--color-primary)",
+                backgroundColor: "var(--color-accent)",
+                border: "none",
+                borderRadius: "8px",
+                textDecoration: "none",
+                fontWeight: 700,
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              Back to products
+            </Link>
+            <AddToCartButton
+              product={{
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                imageUrl: product.imageUrl,
+              }}
+            />
+          </div>
         </section>
       </article>
       <ProductReviews

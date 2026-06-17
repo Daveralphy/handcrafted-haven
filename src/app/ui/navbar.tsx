@@ -21,6 +21,28 @@ type NavbarProps = {
   navItems?: NavItem[];
 };
 
+type CartItem = {
+  quantity?: number;
+};
+
+const cartStorageKey = "handcrafted-haven-cart";
+
+function getStoredCartItemCount() {
+  try {
+    const savedCart = window.localStorage.getItem(cartStorageKey);
+    const cartItems = savedCart ? JSON.parse(savedCart) : [];
+
+    return Array.isArray(cartItems)
+      ? cartItems.reduce(
+          (total: number, item: CartItem) => total + (Number(item.quantity) || 0),
+          0
+        )
+      : 0;
+  } catch {
+    return 0;
+  }
+}
+
 function CartIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -60,6 +82,7 @@ export default function Navbar({
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [liveCartItemCount, setLiveCartItemCount] = useState(cartItemCount);
 
   useEffect(() => {
     const supabase = createClient();
@@ -74,6 +97,19 @@ export default function Navbar({
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const updateCartCount = () => setLiveCartItemCount(getStoredCartItemCount());
+
+    updateCartCount();
+    window.addEventListener("storage", updateCartCount);
+    window.addEventListener("handcrafted-haven-cart-updated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("storage", updateCartCount);
+      window.removeEventListener("handcrafted-haven-cart-updated", updateCartCount);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -94,17 +130,7 @@ export default function Navbar({
     .toUpperCase();
 
   return (
-    <header style={{ backgroundColor: 'var(--color-primary)', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%' }}>
-      <style>{`
-        @media (max-width: 700px) {
-          .mobile-nav-menu {
-            padding: 0.75rem !important;
-          }
-          .mobile-nav-item {
-            padding: 0.65rem 0.9rem !important;
-          }
-        }
-      `}</style>
+    <header style={{ backgroundColor: 'var(--color-primary)', borderBottom: '1px solid rgba(255,255,255,0.1)', width: '100%', position: 'relative', zIndex: 1000 }}>
       <nav
         aria-label="Main navigation"
         className="relative max-[700.98px]:!px-4 max-[700.98px]:!py-3"
@@ -131,7 +157,7 @@ export default function Navbar({
           {/* Navigation Items */}
           <div
             id="site-navigation-links"
-            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
+            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:z-[1001] max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
               }`}
             style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}
           >
@@ -162,13 +188,13 @@ export default function Navbar({
 
             <Link
               href={cartAction.href}
-              aria-label={`${cartAction.label} with ${cartItemCount} items`}
+              aria-label={`${cartAction.label} with ${liveCartItemCount} items`}
               onClick={() => setMobileMenuOpen(false)}
               className="text-background transition-colors hover:text-accent"
               style={{ display: 'grid', placeItems: 'center', width: '32px', height: '32px', position: 'relative' }}
             >
               <CartIcon />
-              {cartItemCount > 0 && (
+              {liveCartItemCount > 0 && (
                 <span style={{
                   position: 'absolute',
                   top: '-4px',
@@ -184,7 +210,7 @@ export default function Navbar({
                   placeItems: 'center',
                   lineHeight: 1
                 }}>
-                  {cartItemCount}
+                  {liveCartItemCount}
                 </span>
               )}
             </Link>

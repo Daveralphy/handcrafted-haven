@@ -33,7 +33,18 @@ export default function LoginPage() {
         return;
       }
 
+      const redirectPath =
+        new URLSearchParams(window.location.search).get("redirect") || "";
+      const safeRedirectPath = redirectPath.startsWith("/")
+        ? redirectPath
+        : "";
       const role = data.user?.user_metadata?.role;
+      if (safeRedirectPath) {
+        router.push(safeRedirectPath);
+        router.refresh();
+        return;
+      }
+
       if (role === 'artisan') {
         router.push('/dashboard');
       } else {
