@@ -148,7 +148,7 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
               display: 'flex',
               flexDirection: 'column'
             }}>
-              <div style={{
+              <div className="max-[700.98px]:!h-[260px]" style={{
                 height: '160px',
                 backgroundColor: '#f1f5f9',
                 display: 'flex',
@@ -178,9 +178,9 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
                 <span style={{ fontSize: '0.75rem', color: '#334155', fontWeight: 'bold', textTransform: 'uppercase' }}>
                   {product.category}
                 </span>
-                <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0, fontWeight: '600', fontFamily: 'var(--font-body)', lineHeight: '1.4' }}>
+                <h3 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0, fontWeight: '600', fontFamily: 'var(--font-body)', lineHeight: '1.4' }}>
                   {product.title}
-                </h4>
+                </h3>
                 <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem' }}>
                   <span style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>
                     ${Number(product.price).toFixed(2)}
