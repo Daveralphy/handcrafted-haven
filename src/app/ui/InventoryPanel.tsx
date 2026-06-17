@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface Artisan {
   id: string;
@@ -427,13 +428,15 @@ export default function InventoryPanel({
                 color: '#64748b',
                 fontSize: '0.85rem',
                 textAlign: 'center',
+                position: 'relative',
               }}>
                 {form.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={form.imageUrl}
                     alt="Product preview"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    fill
+                    sizes="240px"
+                    style={{ objectFit: 'cover' }}
                   />
                 ) : (
                   <span style={{ padding: '1rem' }}>Image preview</span>
@@ -525,13 +528,15 @@ export default function InventoryPanel({
                       color: '#94a3b8',
                       fontSize: '0.75rem',
                       flex: '0 0 76px',
+                      position: 'relative',
                     }}>
                       {product.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={product.imageUrl}
                           alt={product.title}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          fill
+                          sizes="76px"
+                          style={{ objectFit: 'cover' }}
                         />
                       ) : (
                         <span>Image</span>

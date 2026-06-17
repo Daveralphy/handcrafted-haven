@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { getPrisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import ProductReviews from "../../ui/ProductReviews";
@@ -138,20 +139,17 @@ export default async function ProductDetailsPage({
             textAlign: "center",
             fontWeight: 600,
             overflow: "hidden",
+            position: "relative",
           }}
         >
           {product.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={product.imageUrl}
               alt={product.title}
-              style={{
-                display: "block",
-                width: "100%",
-                height: "100%",
-                maxHeight: "500px",
-                objectFit: "cover",
-              }}
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 520px"
+              style={{ objectFit: "cover" }}
             />
           ) : (
             <span style={{ padding: "2rem" }}>{product.category ?? "Handcrafted"} product image</span>

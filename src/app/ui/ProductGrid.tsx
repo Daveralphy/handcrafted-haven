@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import CategorySidebar from './CategorySidebar';
 
 /* Designed by Oribi - 100% Dynamic Data Driven */
@@ -157,14 +158,16 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
                 fontSize: '0.85rem',
                 fontWeight: '500',
                 textAlign: 'center',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                position: 'relative'
               }}>
                 {product.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={product.imageUrl}
                     alt={product.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    fill
+                    sizes="(max-width: 700px) 100vw, (max-width: 1200px) 50vw, 360px"
+                    style={{ objectFit: 'cover' }}
                   />
                 ) : (
                   <span style={{ padding: '1rem' }}>[ {product.category} Image View ]</span>
