@@ -1,6 +1,7 @@
 "use client";
 
 /* Designed by Porter Luke Frazier */
+/* Search functionality added by Raphael Eferire Daveal */
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -31,7 +32,6 @@ function getStoredCartItemCount() {
   try {
     const savedCart = window.localStorage.getItem(cartStorageKey);
     const cartItems = savedCart ? JSON.parse(savedCart) : [];
-
     return Array.isArray(cartItems)
       ? cartItems.reduce(
           (total: number, item: CartItem) => total + (Number(item.quantity) || 0),
@@ -41,6 +41,14 @@ function getStoredCartItemCount() {
   } catch {
     return 0;
   }
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35m1.1-5.4a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+    </svg>
+  );
 }
 
 function CartIcon() {
@@ -80,6 +88,8 @@ export default function Navbar({
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [liveCartItemCount, setLiveCartItemCount] = useState(cartItemCount);
@@ -101,11 +111,9 @@ export default function Navbar({
 
   useEffect(() => {
     const updateCartCount = () => setLiveCartItemCount(getStoredCartItemCount());
-
     updateCartCount();
     window.addEventListener("storage", updateCartCount);
     window.addEventListener("handcrafted-haven-cart-updated", updateCartCount);
-
     return () => {
       window.removeEventListener("storage", updateCartCount);
       window.removeEventListener("handcrafted-haven-cart-updated", updateCartCount);
@@ -118,6 +126,16 @@ export default function Navbar({
     setProfileOpen(false);
     router.push('/');
     router.refresh();
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    setSearchOpen(false);
+    setSearchQuery('');
+    setMobileMenuOpen(false);
+    router.push(`/products?search=${encodeURIComponent(trimmed)}`);
   };
 
   const userName = user?.user_metadata?.name || user?.email || '';
@@ -154,11 +172,13 @@ export default function Navbar({
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 3vw, 2rem)' }}>
+
           {/* Navigation Items */}
           <div
             id="site-navigation-links"
-            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:z-[1001] max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
-              }`}
+            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:z-[1001] max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${
+              mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
+            }`}
             style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}
           >
             {navItems.map((item) => (
@@ -175,17 +195,81 @@ export default function Navbar({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-            {/* Unecessary and unable to implement in time.
-             <Link
-              href={searchAction.href}
-              aria-label={searchAction.label}
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-background transition-colors hover:text-accent"
-              style={{ display: 'grid', placeItems: 'center', width: '32px', height: '32px' }}
-            >
-              <SearchIcon />
-            </Link> */}
 
+            {/* Search */}
+            <div style={{ position: 'relative' }}>
+              {searchOpen ? (
+                <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search products..."
+                    autoFocus
+                    style={{
+                      padding: '0.4rem 0.75rem',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      color: 'var(--color-background)',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      width: '180px',
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      background: 'var(--color-accent)',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '0.4rem 0.6rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'var(--color-primary)',
+                    }}
+                  >
+                    <SearchIcon />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-background)',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      padding: '0.2rem',
+                    }}
+                  >
+                    ✕
+                  </button>
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Search products"
+                  className="text-background transition-colors hover:text-accent"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'grid',
+                    placeItems: 'center',
+                    width: '32px',
+                    height: '32px',
+                    color: 'var(--color-background)',
+                  }}
+                >
+                  <SearchIcon />
+                </button>
+              )}
+            </div>
+
+            {/* Cart */}
             <Link
               href={cartAction.href}
               aria-label={`${cartAction.label} with ${liveCartItemCount} items`}

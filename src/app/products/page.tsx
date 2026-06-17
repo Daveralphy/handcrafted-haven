@@ -24,12 +24,15 @@ interface Product {
 interface ProductsPageProps {
   searchParams: Promise<{
     artisan?: string | string[];
+    search?: string | string[];
   }>;
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { artisan } = await searchParams;
+  const { artisan, search } = await searchParams;
   const artisanId = Array.isArray(artisan) ? artisan[0] : artisan;
+  const searchQuery = Array.isArray(search) ? search[0] : search;
+
   const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
@@ -57,16 +60,27 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       const productTable = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products');
 
       if (productTable) {
-        const productQuery = artisanId
-          ? {
-              text: `SELECT * FROM "${productTable}" WHERE "artisanId" = $1 LIMIT 50;`,
-              values: [artisanId],
-            }
-          : {
-              text: `SELECT * FROM "${productTable}" LIMIT 50;`,
-              values: [],
-            };
-        const productResult = await pool.query(productQuery);
+        let queryText = `SELECT * FROM "${productTable}"`;
+        const values: string[] = [];
+        const conditions: string[] = [];
+
+        if (artisanId) {
+          conditions.push(`"artisanId" = $${values.length + 1}`);
+          values.push(artisanId);
+        }
+
+        if (searchQuery) {
+          conditions.push(`LOWER(title) LIKE $${values.length + 1}`);
+          values.push(`%${searchQuery.toLowerCase()}%`);
+        }
+
+        if (conditions.length > 0) {
+          queryText += ` WHERE ${conditions.join(' AND ')}`;
+        }
+
+        queryText += ` LIMIT 50;`;
+
+        const productResult = await pool.query({ text: queryText, values });
         products = (productResult.rows as ProductRow[]).map((row) => ({
           id: row.id,
           title: row.title,
@@ -88,7 +102,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <main style={{ backgroundColor: "var(--color-background)", minHeight: "100vh", padding: "3rem 2rem" }}>
       <section style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
         <h1 style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)", fontSize: "3rem", fontWeight: "bold", margin: "0 0 2rem", textAlign: "center" }}>
-          Explore Our Handcrafted Collection
+          {searchQuery ? `Results for "${searchQuery}"` : "Explore Our Handcrafted Collection"}
         </h1>
         {loadError ? (
           <div style={{
