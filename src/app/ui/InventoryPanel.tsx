@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { updateProfileDescription } from '@/app/actions/profileActions';
+import { createProduct, deleteProduct, updateProduct } from '@/app/actions/productActions';
 
 interface Artisan {
   id: string;
@@ -99,14 +101,12 @@ export default function InventoryPanel({
     setIsSavingBio(true);
 
     try {
-      const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: bioDraft, artisanId: selectedArtisanId }),
+      const data = await updateProfileDescription({
+        description: bioDraft,
+        artisanId: selectedArtisanId,
       });
-      const data = await response.json();
 
-      if (!response.ok) {
+      if (data.error) {
         showMessage('error', data.error || 'Could not update your profile description.');
         return;
       }
@@ -159,13 +159,16 @@ export default function InventoryPanel({
     setIsSubmitting(true);
 
     try {
-      const url = editingId ? `/api/products/${editingId}` : '/api/products';
-      const method = editingId ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const data = editingId
+        ? await updateProduct(editingId, {
+            title: form.title,
+            price: Number(form.price),
+            category: form.category,
+            availability: form.availability,
+            description: form.description,
+            imageUrl: form.imageUrl,
+          })
+        : await createProduct({
           title: form.title,
           price: Number(form.price),
           category: form.category,
@@ -173,13 +176,10 @@ export default function InventoryPanel({
           description: form.description,
           imageUrl: form.imageUrl,
           artisanId: selectedArtisanId,
-        }),
-      });
+        });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        showMessage('error', 'Something went wrong. Please try again.');
+      if (data.error || !data.product) {
+        showMessage('error', data.error || 'Something went wrong. Please try again.');
         return;
       }
 
@@ -203,10 +203,10 @@ export default function InventoryPanel({
   const handleDelete = async (productId: string) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+      const result = await deleteProduct(productId);
 
-      if (!response.ok) {
-        showMessage('error', 'Could not delete the product. Please try again.');
+      if (result.error) {
+        showMessage('error', result.error || 'Could not delete the product. Please try again.');
         return;
       }
 

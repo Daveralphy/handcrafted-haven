@@ -4,6 +4,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
+import { addReview } from "@/app/actions/reviewActions";
 import StarRating from "./StarRating";
 
 export interface ProductReview {
@@ -46,21 +47,14 @@ export default function ProductReviews({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId,
-          rating: parsedRating,
-          comment: comment.trim() || null,
-        }),
+      const result = await addReview({
+        productId,
+        rating: parsedRating,
+        comment: comment.trim(),
       });
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        setError(data?.error || "Unable to add your review right now.");
+      if (result.error) {
+        setError(result.error);
         return;
       }
     } finally {

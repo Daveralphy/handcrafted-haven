@@ -1,4 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+/* Designed by Porter Luke Frazier */
+
+"use server";
+
+import { revalidatePath } from "next/cache";
 import { Pool } from "pg";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,29 +17,33 @@ function getPool() {
   return new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
 }
 
-export async function PUT(request: NextRequest) {
+export async function updateProfileDescription({
+  description,
+  artisanId,
+}: {
+  description: string;
+  artisanId: string;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user || user.user_metadata?.role !== "artisan") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return { error: "Unauthorized" };
   }
 
+  if (typeof description !== "string") {
+    return { error: "Profile description must be text." };
+  }
+
+  const targetArtisanId =
+    process.env.NODE_ENV !== "production" && typeof artisanId === "string"
+      ? artisanId
+      : user.id;
   const pool = getPool();
 
   try {
-    const { bio, description, artisanId } = await request.json();
-    const profileDescription = typeof description === "string" ? description : bio;
-    const targetArtisanId = process.env.NODE_ENV !== "production" && typeof artisanId === "string"
-      ? artisanId
-      : user.id;
-
-    if (typeof profileDescription !== "string") {
-      return NextResponse.json({ error: "Profile description must be text." }, { status: 400 });
-    }
-
     await pool.query(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "bio" TEXT;`);
 
     const result = await pool.query(
@@ -43,18 +51,21 @@ export async function PUT(request: NextRequest) {
        SET bio = $1
        WHERE id = $2 AND role = 'artisan'
        RETURNING id, bio;`,
-      [profileDescription.trim() || null, targetArtisanId]
+      [description.trim() || null, targetArtisanId]
     );
 
     if (result.rowCount === 0) {
-      return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+      return { error: "Profile not found." };
     }
 
-    return NextResponse.json({ profile: result.rows[0] }, { status: 200 });
+    revalidatePath("/dashboard");
+    revalidatePath(`/artisans/${targetArtisanId}`);
+
+    return { profile: result.rows[0] };
   } catch (error) {
     console.error("Profile update error:", error);
-    return NextResponse.json({ error: "Failed to update profile." }, { status: 500 });
+    return { error: "Failed to update profile." };
   } finally {
-    await pool.end().catch(() => {});
+    await pool.end().catch(() => { });
   }
 }
