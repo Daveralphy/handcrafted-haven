@@ -91,6 +91,7 @@ export default function SignupPage() {
             email: form.email,
             name: form.name,
             role: role,
+            description: form.bio,
           }),
         });
       }
@@ -100,7 +101,7 @@ export default function SignupPage() {
       } else {
         router.push('/');
       }
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -285,7 +286,7 @@ export default function SignupPage() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>Short Bio</label>
+                    <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>Profile Description</label>
                     <textarea
                       value={form.bio}
                       onChange={e => handleFormChange('bio', e.target.value)}

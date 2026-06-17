@@ -9,6 +9,7 @@ interface ProductRow {
   price: number | string;
   category: string;
   availability: string;
+  imageUrl: string | null;
 }
 
 interface Product {
@@ -17,6 +18,7 @@ interface Product {
   price: number;
   category: string;
   availability: string;
+  imageUrl: string | null;
 }
 
 interface ProductsPageProps {
@@ -71,6 +73,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           price: Number(row.price),
           category: row.category,
           availability: row.availability,
+          imageUrl: row.imageUrl,
         }));
       }
     } catch (error) {

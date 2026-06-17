@@ -33,7 +33,6 @@ export default function RootLayout({
         <Navbar
           brandTitle={siteConfig.title}
           navItems={siteConfig.navItems}
-          searchAction={siteConfig.actions.search}
           cartAction={siteConfig.actions.cart}
         />
         {children}
