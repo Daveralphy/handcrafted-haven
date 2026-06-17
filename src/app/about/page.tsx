@@ -64,6 +64,8 @@ export default function AboutPage() {
               'Porter Luke Frazier',
               'Lehi Nyakno Daniel',
               'Christiana Nwachukwu',
+              'Oribi Teo- Iyalla',
+              'Hann Dowyne Valcourt'
             ].map(name => (
               <div key={name} style={{
                 display: 'flex',
