@@ -169,7 +169,20 @@ export default async function ArtisansPage() {
                   <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 'bold', margin: '0 0 0.25rem 0' }}>
                     {artisan.name}
                   </h2>
-                  <p style={{ color: 'var(--color-accent)', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 0.5rem 0' }}>
+                  <p style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'var(--color-background)',
+                    borderRadius: '999px',
+                    padding: '0.22rem 0.58rem',
+                    fontSize: '0.68rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    margin: '0 0 0.5rem 0'
+                  }}>
                     Verified Artisan
                   </p>
                   <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
