@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import Link from 'next/link';
+import Image from 'next/image';
 
 /* Designed by Raphael */
 
@@ -11,6 +12,7 @@ interface ArtisanRow {
   email: string;
   createdAt: Date;
   product_count: string;
+  imageUrl: string | null;
 }
 
 interface Artisan {
@@ -19,6 +21,7 @@ interface Artisan {
   email: string;
   createdAt: Date;
   productCount: number;
+  imageUrl: string | null;
 }
 
 function createUsernameSlug(artisan: Pick<Artisan, "id" | "name" | "email">) {
@@ -28,7 +31,6 @@ function createUsernameSlug(artisan: Pick<Artisan, "id" | "name" | "email">) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-
   return slug || artisan.id;
 }
 
@@ -61,12 +63,12 @@ export default async function ArtisansPage() {
 
       if (userTable) {
         const result = await pool.query(`
-          SELECT u.id, u.name, u.email, u."createdAt",
+          SELECT u.id, u.name, u.email, u."createdAt", u."imageUrl",
             COUNT(p.id) as product_count
           FROM "${userTable}" u
           LEFT JOIN "Product" p ON p."artisanId" = u.id
           WHERE u.role = 'artisan'
-          GROUP BY u.id, u.name, u.email, u."createdAt"
+          GROUP BY u.id, u.name, u.email, u."createdAt", u."imageUrl"
           ORDER BY u.name;
         `);
         artisans = (result.rows as ArtisanRow[]).map((row) => ({
@@ -75,6 +77,7 @@ export default async function ArtisansPage() {
           email: row.email,
           createdAt: row.createdAt,
           productCount: Number(row.product_count),
+          imageUrl: row.imageUrl || null,
         }));
       }
     } catch (error) {
@@ -99,13 +102,7 @@ export default async function ArtisansPage() {
         </div>
 
         {loadError ? (
-          <div style={{
-            padding: '4rem 2rem',
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
-            textAlign: 'center',
-          }}>
+          <div style={{ padding: '4rem 2rem', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛠️</div>
             <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', fontSize: '1.75rem', marginBottom: '0.75rem' }}>
               We are tidying things up
@@ -115,13 +112,7 @@ export default async function ArtisansPage() {
             </p>
           </div>
         ) : artisans.length === 0 ? (
-          <div style={{
-            padding: '4rem 2rem',
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
-            textAlign: 'center',
-          }}>
+          <div style={{ padding: '4rem 2rem', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎨</div>
             <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', fontSize: '1.75rem', marginBottom: '0.75rem' }}>
               No artisans yet
@@ -149,20 +140,38 @@ export default async function ArtisansPage() {
                 textAlign: 'center',
                 gap: '1rem',
               }}>
+
+                {/* Artisan Avatar */}
                 <div style={{
                   width: '80px',
                   height: '80px',
                   borderRadius: '50%',
+                  overflow: 'hidden',
                   backgroundColor: 'var(--color-primary)',
-                  color: 'var(--color-background)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2rem',
-                  fontWeight: 'bold',
+                  flexShrink: 0,
                   boxShadow: '0 4px 12px rgba(75, 0, 130, 0.2)',
+                  position: 'relative',
                 }}>
-                  {artisan.name ? artisan.name.charAt(0).toUpperCase() : '?'}
+                  {artisan.imageUrl ? (
+                    <Image
+                      src={artisan.imageUrl}
+                      alt={artisan.name || 'Artisan'}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="80px"
+                    />
+                  ) : (
+                    <span style={{
+                      color: 'var(--color-background)',
+                      fontSize: '2rem',
+                      fontWeight: 'bold',
+                    }}>
+                      {artisan.name ? artisan.name.charAt(0).toUpperCase() : '?'}
+                    </span>
+                  )}
                 </div>
 
                 <div>
