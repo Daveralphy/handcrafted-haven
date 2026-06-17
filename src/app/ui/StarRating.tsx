@@ -6,6 +6,27 @@ interface StarRatingProps {
   showSummary?: boolean;
 }
 
+function RatingStars({ filledCount }: { filledCount: number }) {
+  return (
+    <span aria-hidden="true" style={{ letterSpacing: "0.12rem" }}>
+      {Array.from({ length: 5 }, (_, index) => {
+        const isFilled = index < filledCount;
+
+        return (
+          <span
+            key={index}
+            style={{
+              color: "var(--color-primary)",
+            }}
+          >
+            {isFilled ? "★" : "☆"}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 export default function StarRating({
   rating,
   reviewCount = 0,
@@ -25,9 +46,7 @@ export default function StarRating({
           fontWeight: 600,
         }}
       >
-        <span aria-hidden="true" style={{ color: "#cbd5e1", letterSpacing: "0.12rem" }}>
-          ☆☆☆☆☆
-        </span>
+        <RatingStars filledCount={0} />
         <span>No reviews yet</span>
       </div>
     );
@@ -54,11 +73,7 @@ export default function StarRating({
         fontWeight: 600,
       }}
     >
-      <span aria-hidden="true" style={{ color: "var(--color-accent)", letterSpacing: "0.12rem" }}>
-        {Array.from({ length: 5 }, (_, index) =>
-          index < roundedRating ? "★" : "☆"
-        ).join("")}
-      </span>
+      <RatingStars filledCount={roundedRating} />
       {showSummary && (
         <span>
           {rating.toFixed(1)} ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
