@@ -19,16 +19,7 @@ type NavbarProps = {
   cartAction: NavAction;
   cartItemCount?: number;
   navItems?: NavItem[];
-  searchAction: NavAction;
 };
-
-function SearchIcon() {
-  return (
-    <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35m1.1-5.4a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
-    </svg>
-  );
-}
 
 function CartIcon() {
   return (
@@ -63,7 +54,6 @@ export default function Navbar({
   cartAction,
   cartItemCount = 0,
   navItems = [],
-  searchAction,
 }: NavbarProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -141,9 +131,8 @@ export default function Navbar({
           {/* Navigation Items */}
           <div
             id="site-navigation-links"
-            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${
-              mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
-            }`}
+            className={`mobile-nav-menu max-[700.98px]:absolute max-[700.98px]:left-auto max-[700.98px]:right-4 max-[700.98px]:top-[calc(100%+0.35rem)] max-[700.98px]:w-56 max-[700.98px]:max-w-[calc(100vw_-_2rem)] max-[700.98px]:!gap-0 max-[700.98px]:rounded-lg max-[700.98px]:border max-[700.98px]:border-white/20 max-[700.98px]:bg-primary max-[700.98px]:shadow-[0_12px_30px_rgba(30,0,50,0.28)] ${mobileMenuOpen ? "max-[700.98px]:!flex max-[700.98px]:!flex-col" : "max-[700.98px]:!hidden"
+              }`}
             style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}
           >
             {navItems.map((item) => (
@@ -160,7 +149,8 @@ export default function Navbar({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-            <Link
+            {/* Unecessary and unable to implement in time.
+             <Link
               href={searchAction.href}
               aria-label={searchAction.label}
               onClick={() => setMobileMenuOpen(false)}
@@ -168,7 +158,7 @@ export default function Navbar({
               style={{ display: 'grid', placeItems: 'center', width: '32px', height: '32px' }}
             >
               <SearchIcon />
-            </Link>
+            </Link> */}
 
             <Link
               href={cartAction.href}
@@ -201,94 +191,94 @@ export default function Navbar({
 
             {/* Profile Icon with Dropdown */}
             <div style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setProfileOpen((open) => !open)}
-              aria-label="Profile menu"
-              aria-expanded={profileOpen}
-              className="transition-colors hover:text-accent"
-              style={{
-                background: user ? 'var(--color-accent)' : 'none',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: user ? 'var(--color-primary)' : 'var(--color-background)',
-                padding: '0',
-                width: '32px',
-                height: '32px',
-                borderRadius: user ? '50%' : '8px',
-                fontWeight: 'bold',
-                fontSize: '0.85rem',
-              }}
-            >
-              {loading ? <ProfileIcon /> : user ? (initials || <ProfileIcon />) : <ProfileIcon />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((open) => !open)}
+                aria-label="Profile menu"
+                aria-expanded={profileOpen}
+                className="transition-colors hover:text-accent"
+                style={{
+                  background: user ? 'var(--color-accent)' : 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: user ? 'var(--color-primary)' : 'var(--color-background)',
+                  padding: '0',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: user ? '50%' : '8px',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                }}
+              >
+                {loading ? <ProfileIcon /> : user ? (initials || <ProfileIcon />) : <ProfileIcon />}
+              </button>
 
-            {profileOpen && (
-              <>
-                <div onClick={() => setProfileOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 10 }} />
-                <div style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 0.75rem)',
-                  right: 0,
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
-                  minWidth: '200px',
-                  zIndex: 20,
-                  overflow: 'hidden',
-                }}>
-                  {user ? (
-                    <>
-                      <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid #f1f5f9' }}>
-                        <p style={{ margin: 0, fontWeight: '600', fontSize: '0.9rem', color: '#0f172a' }}>{userName}</p>
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', textTransform: 'capitalize' }}>{userRole}</p>
-                      </div>
-                      {userRole === 'artisan' && (
+              {profileOpen && (
+                <>
+                  <div onClick={() => setProfileOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 10 }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 0.75rem)',
+                    right: 0,
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '10px',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+                    minWidth: '200px',
+                    zIndex: 20,
+                    overflow: 'hidden',
+                  }}>
+                    {user ? (
+                      <>
+                        <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+                          <p style={{ margin: 0, fontWeight: '600', fontSize: '0.9rem', color: '#0f172a' }}>{userName}</p>
+                          <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', textTransform: 'capitalize' }}>{userRole}</p>
+                        </div>
+                        {userRole === 'artisan' && (
+                          <Link
+                            href="/dashboard"
+                            onClick={() => setProfileOpen(false)}
+                            style={{ display: 'block', padding: '0.75rem 1.25rem', color: '#0f172a', textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', borderBottom: '1px solid #f1f5f9' }}
+                            className="hover:text-accent"
+                          >
+                            Dashboard
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleSignOut}
+                          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.75rem 1.25rem', color: '#ef4444', fontSize: '0.95rem', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
                         <Link
-                          href="/dashboard"
+                          href="/login"
                           onClick={() => setProfileOpen(false)}
                           style={{ display: 'block', padding: '0.75rem 1.25rem', color: '#0f172a', textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', borderBottom: '1px solid #f1f5f9' }}
                           className="hover:text-accent"
                         >
-                          Dashboard
+                          Sign In
                         </Link>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '0.75rem 1.25rem', color: '#ef4444', fontSize: '0.95rem', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/login"
-                        onClick={() => setProfileOpen(false)}
-                        style={{ display: 'block', padding: '0.75rem 1.25rem', color: '#0f172a', textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', borderBottom: '1px solid #f1f5f9' }}
-                        className="hover:text-accent"
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        href="/signup"
-                        onClick={() => setProfileOpen(false)}
-                        style={{ display: 'block', padding: '0.75rem 1.25rem', color: '#0f172a', textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500' }}
-                        className="hover:text-accent"
-                      >
-                        Sign Up
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+                        <Link
+                          href="/signup"
+                          onClick={() => setProfileOpen(false)}
+                          style={{ display: 'block', padding: '0.75rem 1.25rem', color: '#0f172a', textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500' }}
+                          className="hover:text-accent"
+                        >
+                          Sign Up
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Mobile Menu Button */}
             <button

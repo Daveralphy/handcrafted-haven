@@ -13,6 +13,7 @@ interface ProductRow {
   price: number | string;
   category: string;
   availability: string;
+  imageUrl: string | null;
 }
 
 interface ArtisanRow {
@@ -29,6 +30,7 @@ interface Product {
   price: number;
   category: string;
   availability: string;
+  imageUrl: string | null;
 }
 
 interface Artisan {
@@ -78,6 +80,7 @@ export default async function Home() {
             price: Number(row.price),
             category: row.category,
             availability: row.availability,
+            imageUrl: row.imageUrl,
           }));
         }
 

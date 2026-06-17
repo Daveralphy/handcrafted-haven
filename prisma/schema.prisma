@@ -10,6 +10,7 @@ model User {
   id        String    @id @default(cuid())
   email     String    @unique
   name      String?
+  bio       String?
   role      String    @default("customer")
   products  Product[]
   reviews   Review[]

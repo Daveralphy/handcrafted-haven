@@ -17,7 +17,7 @@ export const siteConfig = {
   ] satisfies NavItem[],
   actions: {
     search: {
-      href: "/search",
+      href: "/products",
       label: "Search products",
     },
     cart: {

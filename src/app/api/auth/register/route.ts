@@ -15,17 +15,20 @@ export async function POST(request: NextRequest) {
   const pool = getPool();
   try {
     const body = await request.json();
-    const { id, email, name, role } = body;
+    const { id, email, name, role, bio, description } = body;
+    const profileDescription = typeof description === 'string' ? description : bio;
 
     if (!id || !email || !name || !role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    await pool.query(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "bio" TEXT;`);
+
     await pool.query(
-      `INSERT INTO "User" (id, email, name, role, "createdAt")
-       VALUES ($1, $2, $3, $4, NOW())
-       ON CONFLICT (id) DO NOTHING;`,
-      [id, email, name, role]
+      `INSERT INTO "User" (id, email, name, role, bio, "createdAt")
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (id) DO UPDATE SET bio = COALESCE(EXCLUDED.bio, "User".bio);`,
+      [id, email, name, role, profileDescription || null]
     );
 
     return NextResponse.json({ success: true }, { status: 201 });

@@ -131,8 +131,8 @@ export default async function ProductDetailsPage({
             aspectRatio: "4 / 3",
             display: "grid",
             placeItems: "center",
-            padding: "2rem",
             backgroundColor: "var(--color-background)",
+            border: "2px solid var(--color-primary)",
             borderRadius: "12px",
             color: "var(--color-primary)",
             textAlign: "center",
@@ -151,11 +151,10 @@ export default async function ProductDetailsPage({
                 height: "100%",
                 maxHeight: "500px",
                 objectFit: "cover",
-                borderRadius: "10px",
               }}
             />
           ) : (
-            <span>{product.category ?? "Handcrafted"} product image</span>
+            <span style={{ padding: "2rem" }}>{product.category ?? "Handcrafted"} product image</span>
           )}
         </div>
 

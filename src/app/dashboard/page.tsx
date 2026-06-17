@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import InventoryPanel from '../ui/InventoryPanel';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,6 +8,7 @@ interface ArtisanRow {
   id: string;
   name: string;
   email: string;
+  bio: string | null;
 }
 
 interface ProductRow {
@@ -16,6 +18,7 @@ interface ProductRow {
   category: string;
   availability: string;
   description: string;
+  imageUrl: string | null;
   artisanId: string;
   artisan_name: string | null;
 }
@@ -29,11 +32,18 @@ interface Product {
   category: string;
   availability: string;
   description: string;
+  imageUrl: string | null;
   artisanId: string;
   artisanName: string;
 }
 
 export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const loggedInArtisanId = user?.id ?? '';
+  const showProfileSelector = process.env.NODE_ENV !== 'production';
   const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
   const connectionString = rawConnectionString
@@ -63,17 +73,35 @@ export default async function DashboardPage() {
       const productTable = realTableNames.find(t => t.toLowerCase() === 'product' || t.toLowerCase() === 'products');
 
       if (userTable) {
-        const artisanResult = await pool.query(`SELECT id, name, email FROM "${userTable}" WHERE role = 'artisan' ORDER BY name;`);
+        const columnsResult = await pool.query(`
+          SELECT column_name
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = $1;
+        `, [userTable]);
+        const userColumns = columnsResult.rows.map((row: { column_name: string }) => row.column_name);
+        const bioSelect = userColumns.includes('bio') ? ', bio' : ', NULL as bio';
+        const artisanQuery = showProfileSelector
+          ? {
+              text: `SELECT id, name, email${bioSelect} FROM "${userTable}" WHERE role = 'artisan' ORDER BY name;`,
+              values: [],
+            }
+          : {
+              text: `SELECT id, name, email${bioSelect} FROM "${userTable}" WHERE role = 'artisan' AND id = $1 LIMIT 1;`,
+              values: [loggedInArtisanId],
+            };
+        const artisanResult = await pool.query(artisanQuery);
         artisans = (artisanResult.rows as ArtisanRow[]).map((row) => ({
           id: row.id,
           name: row.name,
           email: row.email,
+          bio: row.bio,
         }));
       }
 
       if (productTable) {
         const productResult = await pool.query(`
-          SELECT p.id, p.title, p.price, p.category, p.availability, p.description, p."artisanId", u.name as artisan_name
+          SELECT p.id, p.title, p.price, p.category, p.availability, p.description, p."imageUrl", p."artisanId", u.name as artisan_name
           FROM "${productTable}" p
           LEFT JOIN "User" u ON p."artisanId" = u.id
           ORDER BY p."createdAt" DESC;
@@ -85,6 +113,7 @@ export default async function DashboardPage() {
           category: row.category,
           availability: row.availability,
           description: row.description,
+          imageUrl: row.imageUrl,
           artisanId: row.artisanId,
           artisanName: row.artisan_name ?? '',
         }));
@@ -127,7 +156,12 @@ export default async function DashboardPage() {
             </p>
           </div>
         ) : (
-          <InventoryPanel artisans={artisans} initialProducts={products} />
+          <InventoryPanel
+            artisans={artisans}
+            initialProducts={products}
+            initialArtisanId={loggedInArtisanId}
+            showProfileSelector={showProfileSelector}
+          />
         )}
       </div>
     </main>

@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, price, category, availability, description } = body;
+    const { title, price, category, availability, description, imageUrl } = body;
 
     if (!title || !price || !category) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -24,10 +24,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const result = await pool.query(
       `UPDATE "Product"
-       SET title = $1, price = $2, category = $3, availability = $4, description = $5
-       WHERE id = $6
+       SET title = $1, price = $2, category = $3, availability = $4, description = $5, "imageUrl" = $6
+       WHERE id = $7
        RETURNING *;`,
-      [title, price, category, availability, description, id]
+      [title, price, category, availability, description, imageUrl || null, id]
     );
 
     if (result.rows.length === 0) {

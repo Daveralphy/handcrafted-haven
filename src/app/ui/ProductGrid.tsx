@@ -12,6 +12,7 @@ interface DBProduct {
   price: number;
   category: string;
   availability: string;
+  imageUrl?: string | null;
 }
 
 interface ProductGridProps {
@@ -155,10 +156,19 @@ function ProductGridContent({ initialProducts }: ProductGridProps) {
                 color: '#94a3b8',
                 fontSize: '0.85rem',
                 fontWeight: '500',
-                padding: '1rem',
-                textAlign: 'center'
+                textAlign: 'center',
+                overflow: 'hidden'
               }}>
-                [ {product.category} Image View ]
+                {product.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={product.imageUrl}
+                    alt={product.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                ) : (
+                  <span style={{ padding: '1rem' }}>[ {product.category} Image View ]</span>
+                )}
               </div>
 
               <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flexGrow: 1 }}>

@@ -21,6 +21,17 @@ interface Artisan {
   productCount: number;
 }
 
+function createUsernameSlug(artisan: Pick<Artisan, "id" | "name" | "email">) {
+  const source = artisan.name || artisan.email.split("@")[0] || artisan.id;
+  const slug = source
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || artisan.id;
+}
+
 export default async function ArtisansPage() {
   const rawConnectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "";
 
@@ -166,7 +177,7 @@ export default async function ArtisansPage() {
                   </p>
                 </div>
 
-                <Link href={`/products?artisan=${artisan.id}`} style={{
+                <Link href={`/artisans/${createUsernameSlug(artisan)}`} style={{
                   backgroundColor: 'var(--color-accent)',
                   color: 'var(--color-primary)',
                   padding: '0.6rem 1.5rem',
