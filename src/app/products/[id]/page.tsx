@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPrisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import ProductReviews from "../../ui/ProductReviews";
 import StarRating from "../../ui/StarRating";
 
@@ -17,6 +18,10 @@ export default async function ProductDetailsPage({
 }: ProductDetailsPageProps) {
   const { id } = await params;
   const prisma = getPrisma();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
@@ -47,6 +52,17 @@ export default async function ProductDetailsPage({
   if (!product) {
     notFound();
   }
+
+  const signedInCustomer = user
+    ? await prisma.user.findFirst({
+        where: {
+          OR: [{ id: user.id }, { email: user.email || "" }],
+        },
+        select: {
+          id: true,
+        },
+      })
+    : null;
 
   const price = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -214,7 +230,11 @@ export default async function ProductDetailsPage({
           </Link>
         </section>
       </article>
-      <ProductReviews reviews={reviews} />
+      <ProductReviews
+        productId={product.id}
+        reviews={reviews}
+        canAddReview={Boolean(signedInCustomer)}
+      />
     </main>
   );
 }
